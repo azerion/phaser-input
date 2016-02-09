@@ -14,20 +14,28 @@ declare module Fabrique {
         placeHolderColor?: string;
     }
     class InputField extends Phaser.Sprite {
-        static ALLOWED_CHARACTERS: number[];
         placeHolder: Phaser.Text;
         box: Phaser.Graphics;
         private focus;
         private cursor;
         text: Phaser.Text;
         private value;
+        private registered;
+        private shift;
+        private padding;
+        private callback;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions: InputOptions);
         private createBox(inputOptions);
         private checkDown(e);
+        private createDomElement();
+        private removeDomElement();
         private blink;
         private cnt;
         update(): number;
-        onKeyPress(): void;
+        private onKeyPress(key);
+        private endFocus();
+        private updateText();
+        private keyListener();
     }
 }
 declare module Fabrique {
