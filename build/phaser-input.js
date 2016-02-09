@@ -5,14 +5,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Fabrique;
 (function (Fabrique) {
-    var Input = (function (_super) {
-        __extends(Input, _super);
-        function Input(game, x, y, inputOptions) {
+    var InputField = (function (_super) {
+        __extends(InputField, _super);
+        function InputField(game, x, y, inputOptions) {
             _super.call(this, game, x, y);
             this.placeHolder = null;
             this.box = null;
             this.focus = false;
-            this.text = '';
+            this.value = '';
             this.blink = true;
             this.cnt = 0;
             this.createBox(inputOptions);
@@ -32,17 +32,17 @@ var Fabrique;
             });
             this.cursor.visible = false;
             this.addChild(this.cursor);
-            this.value = new Phaser.Text(game, inputOptions.padding || 0, (inputOptions.padding || 0), '', {
+            this.text = new Phaser.Text(game, inputOptions.padding || 0, (inputOptions.padding || 0), '', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.placeHolderColor || '#000000'
             });
-            this.addChild(this.value);
+            this.addChild(this.text);
             this.inputEnabled = true;
             this.input.useHandCursor = true;
-            this.events.onInputDown.add(this.onClick, this);
+            this.game.input.onDown.add(this.checkDown, this);
         }
-        Input.prototype.createBox = function (inputOptions) {
+        InputField.prototype.createBox = function (inputOptions) {
             var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
             var borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
             var height = inputOptions.height || 14;
@@ -59,14 +59,24 @@ var Fabrique;
                 .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
             this.addChild(this.box);
         };
-        Input.prototype.onClick = function () {
+        InputField.prototype.checkDown = function (e) {
             var _this = this;
-            this.focus = true;
-            this.game.input.keyboard.onDownCallback = function () {
-                _this.onKeyPress();
-            };
+            if (this.input.checkPointerOver(e)) {
+                this.focus = true;
+                this.game.input.keyboard.onDownCallback = function () {
+                    _this.onKeyPress();
+                };
+                this.placeHolder.visible = false;
+            }
+            else {
+                this.focus = false;
+                if (this.value.length === 0) {
+                    this.placeHolder.visible = true;
+                    this.cursor.visible = false;
+                }
+            }
         };
-        Input.prototype.update = function () {
+        InputField.prototype.update = function () {
             if (!this.focus) {
                 return;
             }
@@ -77,16 +87,85 @@ var Fabrique;
             this.blink = !this.blink;
             this.cnt = 0;
         };
-        Input.prototype.onKeyPress = function () {
+        InputField.prototype.onKeyPress = function () {
             if (!this.focus) {
                 return;
             }
-            this.text += String.fromCharCode(this.game.input.keyboard.event.keyCode);
-            this.value.setText(this.text);
-            this.cursor.x = this.value.width;
+            this.value += String.fromCharCode(this.game.input.keyboard.event.keyCode);
+            this.text.setText(this.value);
+            this.cursor.x = this.text.width;
         };
-        return Input;
+        InputField.ALLOWED_CHARACTERS = [
+            Phaser.Keyboard.A,
+            Phaser.Keyboard.B,
+            Phaser.Keyboard.C,
+            Phaser.Keyboard.D,
+            Phaser.Keyboard.E,
+            Phaser.Keyboard.F,
+            Phaser.Keyboard.G,
+            Phaser.Keyboard.H,
+            Phaser.Keyboard.I,
+            Phaser.Keyboard.J,
+            Phaser.Keyboard.K,
+            Phaser.Keyboard.L,
+            Phaser.Keyboard.M,
+            Phaser.Keyboard.N,
+            Phaser.Keyboard.O,
+            Phaser.Keyboard.P,
+            Phaser.Keyboard.Q,
+            Phaser.Keyboard.R,
+            Phaser.Keyboard.S,
+            Phaser.Keyboard.T,
+            Phaser.Keyboard.U,
+            Phaser.Keyboard.V,
+            Phaser.Keyboard.W,
+            Phaser.Keyboard.X,
+            Phaser.Keyboard.Y,
+            Phaser.Keyboard.Z,
+            Phaser.Keyboard.ZERO,
+            Phaser.Keyboard.ONE,
+            Phaser.Keyboard.TWO,
+            Phaser.Keyboard.THREE,
+            Phaser.Keyboard.FOUR,
+            Phaser.Keyboard.FIVE,
+            Phaser.Keyboard.SIX,
+            Phaser.Keyboard.SEVEN,
+            Phaser.Keyboard.EIGHT,
+            Phaser.Keyboard.NINE,
+        ];
+        return InputField;
     })(Phaser.Sprite);
-    Fabrique.Input = Input;
+    Fabrique.InputField = InputField;
+})(Fabrique || (Fabrique = {}));
+var Fabrique;
+(function (Fabrique) {
+    var Plugins;
+    (function (Plugins) {
+        var InputField = (function (_super) {
+            __extends(InputField, _super);
+            function InputField(game, parent) {
+                _super.call(this, game, parent);
+                this.addInputFieldFactory();
+            }
+            /**
+             * Extends the GameObjectFactory prototype with the support of adding InputField. this allows us to add InputField methods to the game just like any other object:
+             * game.add.InputField();
+             */
+            InputField.prototype.addInputFieldFactory = function () {
+                Phaser.GameObjectFactory.prototype.inputField = function (x, y, inputOptions, group) {
+                    if (group === undefined) {
+                        group = this.world;
+                    }
+                    var nineSliceObject = new Fabrique.InputField(this.game, x, y, inputOptions);
+                    return group.add(nineSliceObject);
+                };
+                Phaser.GameObjectCreator.prototype.inputField = function (x, y, inputOptions) {
+                    return new Fabrique.InputField(this.game, x, y, inputOptions);
+                };
+            };
+            return InputField;
+        })(Phaser.Plugin);
+        Plugins.InputField = InputField;
+    })(Plugins = Fabrique.Plugins || (Fabrique.Plugins = {}));
 })(Fabrique || (Fabrique = {}));
 //# sourceMappingURL=phaser-input.js.map

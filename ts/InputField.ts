@@ -14,8 +14,47 @@ module Fabrique {
         placeHolderColor?: string;
     }
 
-    export class Input extends Phaser.Sprite
+    export class InputField extends Phaser.Sprite
     {
+        public static ALLOWED_CHARACTERS: number[] = [
+            Phaser.Keyboard.A,
+            Phaser.Keyboard.B,
+            Phaser.Keyboard.C,
+            Phaser.Keyboard.D,
+            Phaser.Keyboard.E,
+            Phaser.Keyboard.F,
+            Phaser.Keyboard.G,
+            Phaser.Keyboard.H,
+            Phaser.Keyboard.I,
+            Phaser.Keyboard.J,
+            Phaser.Keyboard.K,
+            Phaser.Keyboard.L,
+            Phaser.Keyboard.M,
+            Phaser.Keyboard.N,
+            Phaser.Keyboard.O,
+            Phaser.Keyboard.P,
+            Phaser.Keyboard.Q,
+            Phaser.Keyboard.R,
+            Phaser.Keyboard.S,
+            Phaser.Keyboard.T,
+            Phaser.Keyboard.U,
+            Phaser.Keyboard.V,
+            Phaser.Keyboard.W,
+            Phaser.Keyboard.X,
+            Phaser.Keyboard.Y,
+            Phaser.Keyboard.Z,
+            Phaser.Keyboard.ZERO,
+            Phaser.Keyboard.ONE,
+            Phaser.Keyboard.TWO,
+            Phaser.Keyboard.THREE,
+            Phaser.Keyboard.FOUR,
+            Phaser.Keyboard.FIVE,
+            Phaser.Keyboard.SIX,
+            Phaser.Keyboard.SEVEN,
+            Phaser.Keyboard.EIGHT,
+            Phaser.Keyboard.NINE,
+        ];
+
         public placeHolder: Phaser.Text = null;
 
         public box: Phaser.Graphics = null;
@@ -24,9 +63,9 @@ module Fabrique {
 
         private cursor: Phaser.Text;
 
-        public value: Phaser.Text;
+        public text: Phaser.Text;
 
-        private text: string = '';
+        private value: string = '';
 
         constructor(game: Phaser.Game, x: number, y: number, inputOptions:InputOptions)
         {
@@ -52,16 +91,16 @@ module Fabrique {
             this.cursor.visible = false;
             this.addChild(this.cursor);
 
-            this.value = new Phaser.Text(game, inputOptions.padding || 0, (inputOptions.padding || 0), '', <Phaser.PhaserTextStyle>{
+            this.text = new Phaser.Text(game, inputOptions.padding || 0, (inputOptions.padding || 0), '', <Phaser.PhaserTextStyle>{
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.placeHolderColor || '#000000'
             });
-            this.addChild(this.value);
+            this.addChild(this.text);
 
             this.inputEnabled = true;
             this.input.useHandCursor = true;
-            this.events.onInputDown.add(this.onClick, this);
+            this.game.input.onDown.add(this.checkDown, this)
         }
 
         private createBox(inputOptions:InputOptions)
@@ -85,12 +124,21 @@ module Fabrique {
             this.addChild(this.box);
         }
 
-        private onClick()
+        private checkDown(e: Phaser.Pointer)
         {
-            this.focus = true;
-            this.game.input.keyboard.onDownCallback = () => {
-                this.onKeyPress()
-            };
+            if (this.input.checkPointerOver(e)) {
+                this.focus = true;
+                this.game.input.keyboard.onDownCallback = () => {
+                    this.onKeyPress()
+                };
+                this.placeHolder.visible = false;
+            } else {
+                this.focus = false;
+                if (this.value.length === 0) {
+                    this.placeHolder.visible = true;
+                    this.cursor.visible = false;
+                }
+            }
         }
 
         private blink:boolean = true;
@@ -115,11 +163,11 @@ module Fabrique {
                 return;
             }
 
-            this.text += String.fromCharCode(this.game.input.keyboard.event.keyCode);
+            this.value += String.fromCharCode(this.game.input.keyboard.event.keyCode);
 
-            this.value.setText(this.text);
+            this.text.setText(this.value);
 
-            this.cursor.x = this.value.width;
+            this.cursor.x = this.text.width;
         }
     }
 }
