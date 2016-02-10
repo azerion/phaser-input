@@ -16,7 +16,6 @@ var Fabrique;
             _super.call(this, game, x, y);
             this.placeHolder = null;
             this.box = null;
-            this.boxShadow = null;
             this.focus = false;
             this.type = InputType.text;
             this.value = '';
@@ -29,7 +28,6 @@ var Fabrique;
             this.blink = true;
             this.cnt = 0;
             this.padding = inputOptions.padding || 0;
-            //this.createBoxShadow(inputOptions);
             this.createBox(inputOptions);
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
                 this.placeHolder = new Phaser.Text(game, this.padding, this.padding, inputOptions.placeHolder, {
@@ -75,22 +73,6 @@ var Fabrique;
                 .lineStyle(inputOptions.borderWidth || 1, borderColor, 1)
                 .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
             this.addChild(this.box);
-        };
-        InputField.prototype.createBoxShadow = function (inputOptions) {
-            var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
-            var borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
-            var height = inputOptions.height || 14;
-            if (inputOptions.font) {
-                //fetch height from font;
-                height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
-            }
-            height = this.padding * 2 + height;
-            var width = inputOptions.width || 150;
-            width = this.padding * 2 + width;
-            this.boxShadow = new Phaser.Graphics(this.game, 0, 0);
-            this.boxShadow.beginFill(bgColor, 1)
-                .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
-            this.addChild(this.boxShadow);
         };
         /**
          * This is a generic input down handler for the game.

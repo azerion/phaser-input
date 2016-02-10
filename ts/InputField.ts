@@ -9,8 +9,6 @@ module Fabrique {
         borderWidth?: number;
         borderColor?: string;
         borderRadius?: number;
-        boxShadow?: string;
-        innerShadow?: string;
         placeHolderColor?: string;
         type?: InputType;
     }
@@ -24,8 +22,6 @@ module Fabrique {
         public placeHolder:Phaser.Text = null;
 
         public box:Phaser.Graphics = null;
-
-        public boxShadow:Phaser.Graphics = null;
 
         private focus:boolean = false;
 
@@ -51,8 +47,6 @@ module Fabrique {
             super(game, x, y);
 
             this.padding = inputOptions.padding || 0;
-
-            //this.createBoxShadow(inputOptions);
             this.createBox(inputOptions);
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
@@ -106,25 +100,6 @@ module Fabrique {
                 .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
 
             this.addChild(this.box);
-        }
-
-        private createBoxShadow(inputOptions:InputOptions) {
-            var bgColor:number = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
-            var borderColor:number = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
-            var height = inputOptions.height || 14;
-            if (inputOptions.font) {
-                //fetch height from font;
-                height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
-            }
-            height = this.padding * 2 + height;
-            var width = inputOptions.width || 150;
-            width = this.padding * 2 + width;
-
-            this.boxShadow = new Phaser.Graphics(this.game, 0, 0);
-            this.boxShadow.beginFill(bgColor, 1)
-                .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
-
-            this.addChild(this.boxShadow);
         }
 
         /**

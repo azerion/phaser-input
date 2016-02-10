@@ -9,8 +9,6 @@ declare module Fabrique {
         borderWidth?: number;
         borderColor?: string;
         borderRadius?: number;
-        boxShadow?: string;
-        innerShadow?: string;
         placeHolderColor?: string;
         type?: InputType;
     }
@@ -21,7 +19,6 @@ declare module Fabrique {
     class InputField extends Phaser.Sprite {
         placeHolder: Phaser.Text;
         box: Phaser.Graphics;
-        boxShadow: Phaser.Graphics;
         private focus;
         private cursor;
         text: Phaser.Text;
@@ -34,7 +31,6 @@ declare module Fabrique {
         private id;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions: InputOptions);
         private createBox(inputOptions);
-        private createBoxShadow(inputOptions);
         /**
          * This is a generic input down handler for the game.
          * if the input object is clicked, we gain focus on it and create the dom element
