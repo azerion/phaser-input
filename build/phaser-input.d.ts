@@ -3,6 +3,7 @@ declare module Fabrique {
         x?: number;
         y?: number;
         placeHolder?: string;
+        fillAlpha?: number;
         width?: number;
         height?: number;
         padding?: number;

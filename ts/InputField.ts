@@ -3,6 +3,7 @@ module Fabrique {
         x?: number;
         y?: number;
         placeHolder?: string;
+        fillAlpha?: number;
         width?: number;
         height?: number;
         padding?: number;
@@ -85,6 +86,7 @@ module Fabrique {
         private createBox(inputOptions:InputOptions) {
             var bgColor:number = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
             var borderColor:number = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
+            var alpha: number = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1;
             var height = inputOptions.height || 14;
             if (inputOptions.font) {
                 //fetch height from font;
@@ -95,8 +97,8 @@ module Fabrique {
             width = this.padding * 2 + width;
 
             this.box = new Phaser.Graphics(this.game, 0, 0);
-            this.box.beginFill(bgColor, 1)
-                .lineStyle(inputOptions.borderWidth || 1, borderColor, 1)
+            this.box.beginFill(bgColor, alpha)
+                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha)
                 .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
 
             this.addChild(this.box);
