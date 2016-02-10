@@ -12,29 +12,69 @@ declare module Fabrique {
         boxShadow?: string;
         innerShadow?: string;
         placeHolderColor?: string;
+        type?: InputType;
+    }
+    enum InputType {
+        text = 0,
+        password = 1,
     }
     class InputField extends Phaser.Sprite {
         placeHolder: Phaser.Text;
         box: Phaser.Graphics;
+        boxShadow: Phaser.Graphics;
         private focus;
         private cursor;
         text: Phaser.Text;
+        type: InputType;
         private value;
         private registered;
         private shift;
         private padding;
         private callback;
+        private id;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions: InputOptions);
         private createBox(inputOptions);
+        private createBoxShadow(inputOptions);
+        /**
+         * This is a generic input down handler for the game.
+         * if the input object is clicked, we gain focus on it and create the dom element
+         *
+         * If there was focus on the element previously, but clicked outside of it, the element will loose focus
+         * and no keyboard events will be registered anymore
+         *
+         * @param e Phaser.Pointer
+         */
         private checkDown(e);
+        /**
+         * Creates a hidden input field, makes sure focus is added to it.
+         * This is all to ensure mobile keyboard are also opened
+         *
+         * And last, but not least, we register an event handler
+         */
         private createDomElement();
+        /**
+         * Removes the hidden input field and the key eventlistener
+         */
         private removeDomElement();
+        /**
+         * Update function makes the cursor blink, it uses two private properties to make it toggle
+         *
+         * @returns {number}
+         */
         private blink;
         private cnt;
         update(): number;
-        private onKeyPress(key);
+        /**
+         * Focus is lost on the input element, we disable the cursor and remove the hidden input element
+         */
         private endFocus();
+        /**
+         * Update the text value in the box, and make sure the cursor is positioned correctly
+         */
         private updateText();
+        /**
+         * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
+         */
         private keyListener();
     }
 }

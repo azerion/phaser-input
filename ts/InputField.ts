@@ -12,6 +12,12 @@ module Fabrique {
         boxShadow?: string;
         innerShadow?: string;
         placeHolderColor?: string;
+        type?: InputType;
+    }
+
+    export enum InputType {
+        text,
+        password
     }
 
     export class InputField extends Phaser.Sprite {
@@ -19,11 +25,15 @@ module Fabrique {
 
         public box:Phaser.Graphics = null;
 
+        public boxShadow:Phaser.Graphics = null;
+
         private focus:boolean = false;
 
         private cursor:Phaser.Text;
 
         public text:Phaser.Text;
+
+        public type: InputType = InputType.text;
 
         private value:string = '';
 
@@ -33,13 +43,16 @@ module Fabrique {
 
         private padding: number;
 
-        private callback: () => void
+        private callback: () => void;
+
+        private id: string = 'phaser-input-' + (Math.random() * 10000 | 0).toString();
 
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions) {
             super(game, x, y);
 
             this.padding = inputOptions.padding || 0;
 
+            //this.createBoxShadow(inputOptions);
             this.createBox(inputOptions);
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
@@ -66,6 +79,10 @@ module Fabrique {
             });
             this.addChild(this.text);
 
+            if (inputOptions.type) {
+                this.type = inputOptions.type
+            }
+
             this.inputEnabled = true;
             this.input.useHandCursor = true;
             this.game.input.onDown.add(this.checkDown, this)
@@ -91,6 +108,34 @@ module Fabrique {
             this.addChild(this.box);
         }
 
+        private createBoxShadow(inputOptions:InputOptions) {
+            var bgColor:number = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
+            var borderColor:number = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
+            var height = inputOptions.height || 14;
+            if (inputOptions.font) {
+                //fetch height from font;
+                height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
+            }
+            height = this.padding * 2 + height;
+            var width = inputOptions.width || 150;
+            width = this.padding * 2 + width;
+
+            this.boxShadow = new Phaser.Graphics(this.game, 0, 0);
+            this.boxShadow.beginFill(bgColor, 1)
+                .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
+
+            this.addChild(this.boxShadow);
+        }
+
+        /**
+         * This is a generic input down handler for the game.
+         * if the input object is clicked, we gain focus on it and create the dom element
+         *
+         * If there was focus on the element previously, but clicked outside of it, the element will loose focus
+         * and no keyboard events will be registered anymore
+         *
+         * @param e Phaser.Pointer
+         */
         private checkDown(e: Phaser.Pointer): void
         {
             if (this.input.checkPointerOver(e)) {
@@ -105,34 +150,65 @@ module Fabrique {
             }
         }
 
+        /**
+         * Creates a hidden input field, makes sure focus is added to it.
+         * This is all to ensure mobile keyboard are also opened
+         *
+         * And last, but not least, we register an event handler
+         */
         private createDomElement()
         {
-            var input = document.createElement('input');
-            input.type = 'text';
-            input.id = 'hack';
+            var input:HTMLInputElement = <HTMLInputElement>document.getElementById(this.id);
+            var created: boolean = false;
+
+            if (null === input) {
+                input = document.createElement('input');
+                created = true;
+            }
+
+            input.id = this.id;
+            //input.id = 'hack';
             input.style.position = 'absolute';
             input.style.top = (-100).toString() + 'px';
             input.style.left = (-100).toString() + 'px';
             input.value = this.value;
-            document.body.appendChild(input);
+
+            if (this.type === InputType.password) {
+                input.type = 'password';
+            } else {
+                input.type = 'text';
+            }
+
+            if (created) {
+                document.body.appendChild(input);
+            }
+
             //chrome/safari hack/bugfix
             setTimeout(() => {
                 input.focus();
-            }, 0);
+            }, 10);
 
 
             this.callback = () => this.keyListener()
             document.addEventListener('keyup', this.callback);
         }
 
+        /**
+         * Removes the hidden input field and the key eventlistener
+         */
         private removeDomElement()
         {
-            var input = document.getElementById('hack');
+            var input = document.getElementById(this.id);
             document.body.removeChild(input);
 
             document.removeEventListener('keyup', this.callback);
         }
 
+        /**
+         * Update function makes the cursor blink, it uses two private properties to make it toggle
+         *
+         * @returns {number}
+         */
         private blink:boolean = true;
         private cnt: number = 0;
         public update()
@@ -150,17 +226,9 @@ module Fabrique {
             this.cnt = 0;
         }
 
-        private onKeyPress(key: Phaser.Key) {
-            if (!this.focus) {
-                return;
-            }
-
-            var s = String.fromCharCode(key.keyCode);
-            this.value += (this.shift.isDown) ? s : s.toLowerCase();
-
-            this.updateText();
-        }
-
+        /**
+         * Focus is lost on the input element, we disable the cursor and remove the hidden input element
+         */
         private endFocus() {
             this.focus = false;
             if (this.value.length === 0) {
@@ -171,15 +239,29 @@ module Fabrique {
             this.removeDomElement();
         }
 
+        /**
+         * Update the text value in the box, and make sure the cursor is positioned correctly
+         */
         private updateText()
         {
-            this.text.setText(this.value);
+            var text: string = '';
+            if (this.type === InputType.password) {
+                for(let i = 0; i < this.value.length; i++) {
+                    text += '*';
+                }
+            } else {
+                text = this.value;
+            }
+            this.text.setText(text);
             this.cursor.x = this.text.width + this.padding;
         }
 
+        /**
+         * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
+         */
         private keyListener()
         {
-            this.value = (<HTMLInputElement>document.getElementById('hack')).value;
+            this.value = (<HTMLInputElement>document.getElementById(this.id)).value;
 
             this.updateText();
         }
