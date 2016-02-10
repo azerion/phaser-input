@@ -24,7 +24,7 @@ declare module Fabrique {
         private cursor;
         text: Phaser.Text;
         type: InputType;
-        private value;
+        value: string;
         private registered;
         private shift;
         private padding;

@@ -1,5 +1,5 @@
 /*!
- * phaser-input - version 0.0.4 
+ * phaser-input - version 0.0.5 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL.
  *
  * OrangeGames
@@ -81,7 +81,7 @@ var Fabrique;
             this.box = new Phaser.Graphics(this.game, 0, 0);
             this.box.beginFill(bgColor, alpha)
                 .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha)
-                .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 3);
+                .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 0);
             this.addChild(this.box);
         };
         /**
