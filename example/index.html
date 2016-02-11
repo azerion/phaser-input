@@ -13,30 +13,33 @@
 
     <!-- Game we want to track -->
     <script type="text/javascript">
-        var game = new Phaser.Game(500, 300, Phaser.AUTO, '', { preload: preload, create: create}, true);
+        var game = new Phaser.Game(500, 300, Phaser.AUTO, '', { create: create}, true);
         Phaser.Device.whenReady(function () {
             game.plugins.add(Fabrique.Plugins.InputField);
         });
-        function preload(){
-            //Text which will be displayed when button is clicked
-            game.add.inputField(10, 10, {
+
+        function create(){
+            var login = game.add.text(30, 10, 'Log in to game', {
+                font: '18px Arial'
+            });
+
+            var user = game.add.inputField(10, 50, {
                 font: '18px Arial',
                 fill: '#212121',
                 fontWeight: 'bold',
-                width: 300,
+                width: 150,
                 padding: 8,
                 borderWidth: 1,
                 borderColor: '#000',
                 borderRadius: 6,
-                placeHolder: 'Username',
+                placeHolder: 'Username'
             });
 
-            //Text which will be displayed when button is clicked
-            game.add.inputField(10, 50, {
+            var password = game.add.inputField(10, 90, {
                 font: '18px Arial',
                 fill: '#212121',
                 fontWeight: 'bold',
-                width: 300,
+                width: 150,
                 padding: 8,
                 borderWidth: 1,
                 borderColor: '#000',
@@ -44,14 +47,28 @@
                 placeHolder: 'Password',
                 type: Fabrique.InputType.password
             });
+
+            var submit = game.add.text(50, 140, 'Submit', {
+                font: '18px Arial'
+            });
+            submit.inputEnabled = true;
+            submit.input.useHandCursor = true;
+            submit.events.onInputDown.add(function() {
+                game.add.text(30, 10, 'Welcome ' + user.value + '!', {
+                    font: '18px Arial'
+                });
+
+                game.add.text(10, 50, 'Your password is: ' + password.value, {
+                    font: '18px Arial'
+                });
+
+                login.destroy();
+                user.destroy();
+                password.destroy();
+                submit.destroy();
+            });
         }
-
-        function create(){
-
-        }
-
     </script>
-
 </head>
 <body>
 </body>

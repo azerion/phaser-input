@@ -80,14 +80,18 @@ module Fabrique {
 
             this.inputEnabled = true;
             this.input.useHandCursor = true;
-            this.game.input.onDown.add(this.checkDown, this)
+
+            this.game.input.onDown.add(this.checkDown, this);
+
+            this.createDomElement();
         }
 
         private createBox(inputOptions:InputOptions) {
-            var bgColor:number = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
-            var borderColor:number = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
-            var alpha: number = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1;
-            var height = inputOptions.height || 14;
+            var bgColor:number = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff,
+                borderRadius = inputOptions.borderRadius || 0,
+                borderColor:number = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595,
+                alpha: number = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1,
+                height = inputOptions.height || 14;
             if (inputOptions.font) {
                 //fetch height from font;
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
@@ -96,10 +100,17 @@ module Fabrique {
             var width = inputOptions.width || 150;
             width = this.padding * 2 + width;
 
+
             this.box = new Phaser.Graphics(this.game, 0, 0);
             this.box.beginFill(bgColor, alpha)
-                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha)
-                .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 0);
+                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha);
+
+            if (borderRadius > 0) {
+                this.box.drawRoundedRect(0, 0, width, height, borderRadius);
+            } else {
+                this.box.drawRect(0, 0, width, height);
+            }
+
 
             this.addChild(this.box);
         }
@@ -119,7 +130,7 @@ module Fabrique {
                 this.focus = true;
                 this.placeHolder.visible = false;
 
-                this.createDomElement()
+                this.startFocus();
             } else {
                 if (this.focus === true) {
                     this.endFocus()
@@ -144,7 +155,6 @@ module Fabrique {
             }
 
             input.id = this.id;
-            //input.id = 'hack';
             input.style.position = 'absolute';
             input.style.top = (-100).toString() + 'px';
             input.style.left = (-100).toString() + 'px';
@@ -160,13 +170,7 @@ module Fabrique {
                 document.body.appendChild(input);
             }
 
-            //chrome/safari hack/bugfix
-            setTimeout(() => {
-                input.focus();
-            }, 10);
-
-
-            this.callback = () => this.keyListener()
+            this.callback = () => this.keyListener();
             document.addEventListener('keyup', this.callback);
         }
 
@@ -212,8 +216,19 @@ module Fabrique {
                 this.placeHolder.visible = true;
             }
             this.cursor.visible = false;
+        }
 
-            this.removeDomElement();
+        private startFocus() {
+            var input = document.getElementById(this.id);
+            if (this.game.device.chrome === true) {
+                //Timeout is a chrome hack
+                setTimeout(() => {
+                    input.focus();
+                }, 0);
+            } else {
+                input.focus();
+            }
+
         }
 
         /**
@@ -241,6 +256,15 @@ module Fabrique {
             this.value = (<HTMLInputElement>document.getElementById(this.id)).value;
 
             this.updateText();
+        }
+
+        /**
+         * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
+         */
+        public destroy() {
+            this.removeDomElement();
+
+            super.destroy();
         }
     }
 }

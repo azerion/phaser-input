@@ -1,12 +1,3 @@
-/*!
- * phaser-input - version 0.0.6 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL.
- *
- * OrangeGames
- * Build at 10-02-2016
- * Released under MIT License 
- */
-
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -65,12 +56,10 @@ var Fabrique;
             this.inputEnabled = true;
             this.input.useHandCursor = true;
             this.game.input.onDown.add(this.checkDown, this);
+            this.createDomElement();
         }
         InputField.prototype.createBox = function (inputOptions) {
-            var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
-            var borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
-            var alpha = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1;
-            var height = inputOptions.height || 14;
+            var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff, borderRadius = inputOptions.borderRadius || 0, borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595, alpha = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1, height = inputOptions.height || 14;
             if (inputOptions.font) {
                 //fetch height from font;
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
@@ -80,8 +69,13 @@ var Fabrique;
             width = this.padding * 2 + width;
             this.box = new Phaser.Graphics(this.game, 0, 0);
             this.box.beginFill(bgColor, alpha)
-                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha)
-                .drawRoundedRect(0, 0, width, height, inputOptions.borderRadius || 0);
+                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha);
+            if (borderRadius > 0) {
+                this.box.drawRoundedRect(0, 0, width, height, borderRadius);
+            }
+            else {
+                this.box.drawRect(0, 0, width, height);
+            }
             this.addChild(this.box);
         };
         /**
@@ -97,7 +91,7 @@ var Fabrique;
             if (this.input.checkPointerOver(e)) {
                 this.focus = true;
                 this.placeHolder.visible = false;
-                this.createDomElement();
+                this.startFocus();
             }
             else {
                 if (this.focus === true) {
@@ -120,7 +114,6 @@ var Fabrique;
                 created = true;
             }
             input.id = this.id;
-            //input.id = 'hack';
             input.style.position = 'absolute';
             input.style.top = (-100).toString() + 'px';
             input.style.left = (-100).toString() + 'px';
@@ -134,10 +127,6 @@ var Fabrique;
             if (created) {
                 document.body.appendChild(input);
             }
-            //chrome/safari hack/bugfix
-            setTimeout(function () {
-                input.focus();
-            }, 10);
             this.callback = function () { return _this.keyListener(); };
             document.addEventListener('keyup', this.callback);
         };
@@ -169,7 +158,18 @@ var Fabrique;
                 this.placeHolder.visible = true;
             }
             this.cursor.visible = false;
-            this.removeDomElement();
+        };
+        InputField.prototype.startFocus = function () {
+            var input = document.getElementById(this.id);
+            if (this.game.device.chrome === true) {
+                //Timeout is a chrome hack
+                setTimeout(function () {
+                    input.focus();
+                }, 0);
+            }
+            else {
+                input.focus();
+            }
         };
         /**
          * Update the text value in the box, and make sure the cursor is positioned correctly
@@ -193,6 +193,13 @@ var Fabrique;
         InputField.prototype.keyListener = function () {
             this.value = document.getElementById(this.id).value;
             this.updateText();
+        };
+        /**
+         * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
+         */
+        InputField.prototype.destroy = function () {
+            this.removeDomElement();
+            _super.prototype.destroy.call(this);
         };
         return InputField;
     })(Phaser.Sprite);

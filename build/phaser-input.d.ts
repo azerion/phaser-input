@@ -65,6 +65,7 @@ declare module Fabrique {
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
         private endFocus();
+        private startFocus();
         /**
          * Update the text value in the box, and make sure the cursor is positioned correctly
          */
@@ -73,6 +74,10 @@ declare module Fabrique {
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
         private keyListener();
+        /**
+         * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
+         */
+        destroy(): void;
     }
 }
 declare module Fabrique {
