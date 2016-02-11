@@ -18,11 +18,11 @@ declare module Fabrique {
         password = 1,
     }
     class InputField extends Phaser.Sprite {
-        placeHolder: Phaser.Text;
-        box: Phaser.Graphics;
+        private placeHolder;
+        private box;
         private focus;
         private cursor;
-        text: Phaser.Text;
+        private text;
         type: InputType;
         value: string;
         private registered;
@@ -30,7 +30,12 @@ declare module Fabrique {
         private padding;
         private callback;
         private id;
-        constructor(game: Phaser.Game, x: number, y: number, inputOptions: InputOptions);
+        constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
+        /**
+         * Creates the nice box for the input field
+         *
+         * @param inputOptions
+         */
         private createBox(inputOptions);
         /**
          * This is a generic input down handler for the game.

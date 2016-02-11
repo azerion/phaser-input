@@ -20,15 +20,15 @@ module Fabrique {
     }
 
     export class InputField extends Phaser.Sprite {
-        public placeHolder:Phaser.Text = null;
+        private placeHolder:Phaser.Text = null;
 
-        public box:Phaser.Graphics = null;
+        private box:Phaser.Graphics = null;
 
         private focus:boolean = false;
 
         private cursor:Phaser.Text;
 
-        public text:Phaser.Text;
+        private text:Phaser.Text;
 
         public type: InputType = InputType.text;
 
@@ -44,7 +44,7 @@ module Fabrique {
 
         private id: string = 'phaser-input-' + (Math.random() * 10000 | 0).toString();
 
-        constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions) {
+        constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
             this.padding = inputOptions.padding || 0;
@@ -86,16 +86,23 @@ module Fabrique {
             this.createDomElement();
         }
 
+        /**
+         * Creates the nice box for the input field
+         *
+         * @param inputOptions
+         */
         private createBox(inputOptions:InputOptions) {
             var bgColor:number = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff,
                 borderRadius = inputOptions.borderRadius || 0,
                 borderColor:number = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595,
                 alpha: number = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1,
                 height = inputOptions.height || 14;
+
             if (inputOptions.font) {
                 //fetch height from font;
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
+
             height = this.padding * 2 + height;
             var width = inputOptions.width || 150;
             width = this.padding * 2 + width;
@@ -128,7 +135,9 @@ module Fabrique {
         {
             if (this.input.checkPointerOver(e)) {
                 this.focus = true;
-                this.placeHolder.visible = false;
+                if (null !== this.placeHolder) {
+                    this.placeHolder.visible = false;
+                }
 
                 this.startFocus();
             } else {

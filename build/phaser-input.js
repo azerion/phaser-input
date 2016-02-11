@@ -1,3 +1,12 @@
+/*!
+ * phaser-input - version 0.1.0 
+ * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
+ *
+ * OrangeGames
+ * Build at 11-02-2016
+ * Released under MIT License 
+ */
+
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13,6 +22,7 @@ var Fabrique;
     var InputField = (function (_super) {
         __extends(InputField, _super);
         function InputField(game, x, y, inputOptions) {
+            if (inputOptions === void 0) { inputOptions = {}; }
             _super.call(this, game, x, y);
             this.placeHolder = null;
             this.box = null;
@@ -58,6 +68,11 @@ var Fabrique;
             this.game.input.onDown.add(this.checkDown, this);
             this.createDomElement();
         }
+        /**
+         * Creates the nice box for the input field
+         *
+         * @param inputOptions
+         */
         InputField.prototype.createBox = function (inputOptions) {
             var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff, borderRadius = inputOptions.borderRadius || 0, borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595, alpha = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1, height = inputOptions.height || 14;
             if (inputOptions.font) {
@@ -90,7 +105,9 @@ var Fabrique;
         InputField.prototype.checkDown = function (e) {
             if (this.input.checkPointerOver(e)) {
                 this.focus = true;
-                this.placeHolder.visible = false;
+                if (null !== this.placeHolder) {
+                    this.placeHolder.visible = false;
+                }
                 this.startFocus();
             }
             else {
