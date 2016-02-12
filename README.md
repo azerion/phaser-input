@@ -56,7 +56,7 @@ Properties
 ----------
  - **x**: number (0 by default) The X-coordinate in the game
  - **y**: number (0 by default) The Y-coordinate in the game
- - **fill**: string (#fff by default) The color of the textbox
+ - **fill**: string (#fff by default) The color of the inputted text
  - **fillAlpha**: number (1 by default) Alpha of the textbox, 0 will hide the textbox and only show the text/placeholder/cursor
  - **width**: number (150 by default) The width of the text box (just like in the DOM, padding, borders add onto this width)
  - **height**: number (14 by default) The height of the text box (just like in the DOM, padding, borders add onto this height)
@@ -67,6 +67,9 @@ Properties
  - **placeHolder**: string ('' by default) Text that will be shown before the user input's anything
  - **placeHolderColor**: string (#000 by default) The color of the placeholder text
  - **type**: InputType (text by default) Either text or password
+ - **backgroundColor**: string (#fff  by default) The background color of the input box
+ - **cursorColor**: string (#000 by default) The color of the blinking cursor
+ - **font**: string (14px Arial by default) The font that is used for the input box, covers the input text, placeholder and cursor
 
 Browser Support
 ---------------
@@ -79,6 +82,12 @@ Tested on:
 
 Changelog
 ---------
+### 0.1.1
+* Fixed sprite texture glitch in WebGL renderers
+* Appended properties with the inherited Phaser.PhaserTextStyle properties that are used
+* added the possibility to change the cursor color
+* made the options parameter optional
+
 ### 0.1.0
 * Full Android/iOS support
 

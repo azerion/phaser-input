@@ -1,11 +1,11 @@
 module Fabrique {
     export module Plugins {
         export interface InputFieldObjectFactory extends Phaser.GameObjectFactory {
-            inputField: (x:number, y:number, inputOptions: Fabrique.InputOptions, group?:Phaser.Group) => Fabrique.InputField;
+            inputField: (x:number, y:number, inputOptions?: Fabrique.InputOptions, group?:Phaser.Group) => Fabrique.InputField;
         }
 
         export interface InputFieldObjectCreator extends Phaser.GameObjectCreator {
-            inputField: (x:number, y:number, inputOptions: Fabrique.InputOptions) => Fabrique.InputField;
+            inputField: (x:number, y:number, inputOptions?: Fabrique.InputOptions) => Fabrique.InputField;
         }
 
         export interface InputFieldGame extends Phaser.Game {

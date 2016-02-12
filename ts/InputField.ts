@@ -10,6 +10,7 @@ module Fabrique {
         borderWidth?: number;
         borderColor?: string;
         borderRadius?: number;
+        cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
     }
@@ -62,7 +63,7 @@ module Fabrique {
             this.cursor = new Phaser.Text(game, this.padding, this.padding - 2, '|', <Phaser.PhaserTextStyle>{
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
-                fill: inputOptions.fill || '#000000'
+                fill: inputOptions.cursorColor || '#000000'
             });
             this.cursor.visible = false;
             this.addChild(this.cursor);
@@ -70,7 +71,7 @@ module Fabrique {
             this.text = new Phaser.Text(game, this.padding, this.padding, '', <Phaser.PhaserTextStyle>{
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
-                fill: inputOptions.placeHolderColor || '#000000'
+                fill: inputOptions.fill || '#000000'
             });
             this.addChild(this.text);
 
@@ -119,7 +120,7 @@ module Fabrique {
             }
 
 
-            this.addChild(this.box);
+            this.setTexture(this.box.generateTexture());
         }
 
         /**

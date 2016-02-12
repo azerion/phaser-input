@@ -1,9 +1,9 @@
 /*!
- * phaser-input - version 0.1.0 
+ * phaser-input - version 0.1.1 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 11-02-2016
+ * Build at 12-02-2016
  * Released under MIT License 
  */
 
@@ -50,14 +50,14 @@ var Fabrique;
             this.cursor = new Phaser.Text(game, this.padding, this.padding - 2, '|', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
-                fill: inputOptions.fill || '#000000'
+                fill: inputOptions.cursorColor || '#000000'
             });
             this.cursor.visible = false;
             this.addChild(this.cursor);
             this.text = new Phaser.Text(game, this.padding, this.padding, '', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
-                fill: inputOptions.placeHolderColor || '#000000'
+                fill: inputOptions.fill || '#000000'
             });
             this.addChild(this.text);
             if (inputOptions.type) {
@@ -91,7 +91,7 @@ var Fabrique;
             else {
                 this.box.drawRect(0, 0, width, height);
             }
-            this.addChild(this.box);
+            this.setTexture(this.box.generateTexture());
         };
         /**
          * This is a generic input down handler for the game.

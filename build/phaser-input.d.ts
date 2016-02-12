@@ -10,6 +10,7 @@ declare module Fabrique {
         borderWidth?: number;
         borderColor?: string;
         borderRadius?: number;
+        cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
     }
@@ -88,10 +89,10 @@ declare module Fabrique {
 declare module Fabrique {
     module Plugins {
         interface InputFieldObjectFactory extends Phaser.GameObjectFactory {
-            inputField: (x: number, y: number, inputOptions: Fabrique.InputOptions, group?: Phaser.Group) => Fabrique.InputField;
+            inputField: (x: number, y: number, inputOptions?: Fabrique.InputOptions, group?: Phaser.Group) => Fabrique.InputField;
         }
         interface InputFieldObjectCreator extends Phaser.GameObjectCreator {
-            inputField: (x: number, y: number, inputOptions: Fabrique.InputOptions) => Fabrique.InputField;
+            inputField: (x: number, y: number, inputOptions?: Fabrique.InputOptions) => Fabrique.InputField;
         }
         interface InputFieldGame extends Phaser.Game {
             add: InputFieldObjectFactory;
