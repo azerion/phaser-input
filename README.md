@@ -82,6 +82,9 @@ Tested on:
 
 Changelog
 ---------
+### 0.1.2
+* Fixed a small issue when no placeHolder was set
+
 ### 0.1.1
 * Fixed sprite texture glitch in WebGL renderers
 * Appended properties with the inherited Phaser.PhaserTextStyle properties that are used

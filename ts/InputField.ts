@@ -222,7 +222,7 @@ module Fabrique {
          */
         private endFocus() {
             this.focus = false;
-            if (this.value.length === 0) {
+            if (this.value.length === 0 && null !== this.placeHolder) {
                 this.placeHolder.visible = true;
             }
             this.cursor.visible = false;
