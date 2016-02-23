@@ -76,12 +76,17 @@ Browser Support
 Tested on:
  - Desktop
   * Chrome 48+
+  * FireFox 44+
+  * Safari 9+
  - Mobile
   * Chrome 48+
   * iOS 9+
 
 Changelog
 ---------
+### 0.1.3
+* Fixed an issue where input wouldn't appear on Desktop Firefox and Safari
+
 ### 0.1.2
 * Fixed a small issue when no placeHolder was set
 

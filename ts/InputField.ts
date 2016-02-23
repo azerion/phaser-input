@@ -230,7 +230,7 @@ module Fabrique {
 
         private startFocus() {
             var input = document.getElementById(this.id);
-            if (this.game.device.chrome === true) {
+            if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(() => {
                     input.focus();
