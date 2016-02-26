@@ -66,10 +66,13 @@ Properties
  - **borderRadius**: number (0 by default) Create rounded corners by setting a border radius
  - **placeHolder**: string ('' by default) Text that will be shown before the user input's anything
  - **placeHolderColor**: string (#000 by default) The color of the placeholder text
- - **type**: InputType (text by default) Either text or password
+ - **type**: InputType (text by default) Either text, password or numeric
  - **backgroundColor**: string (#fff  by default) The background color of the input box
  - **cursorColor**: string (#000 by default) The color of the blinking cursor
  - **font**: string (14px Arial by default) The font that is used for the input box, covers the input text, placeholder and cursor
+ - **maxLength**: number (none by default) The maximum amount of characters allowed, not for number input fields
+ - **min**: string (none by default) The minimum number for the input field, only for number input fields
+ - **max**: string (none by default) The maximum number for the input field, only for number input fields
 
 Browser Support
 ---------------
@@ -84,6 +87,11 @@ Tested on:
 
 Changelog
 ---------
+### 0.1.4
+* You can now reset text
+* Only nummeric input now also possible as type
+* You can now specify a max length (text/password) or min/max (number)
+
 ### 0.1.3
 * Fixed an issue where input wouldn't appear on Desktop Firefox and Safari
 

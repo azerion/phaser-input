@@ -13,11 +13,15 @@ module Fabrique {
         cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
+        maxLength?: number;
+        min?: string;
+        max?: string;
     }
 
     export enum InputType {
         text,
-        password
+        password,
+        number
     }
 
     export class InputField extends Phaser.Sprite {
@@ -45,8 +49,12 @@ module Fabrique {
 
         private id: string = 'phaser-input-' + (Math.random() * 10000 | 0).toString();
 
+        private inputOptions: InputOptions;
+
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
+
+            this.inputOptions = inputOptions;
 
             this.padding = inputOptions.padding || 0;
             this.createBox(inputOptions);
@@ -170,11 +178,19 @@ module Fabrique {
             input.style.left = (-100).toString() + 'px';
             input.value = this.value;
 
-            if (this.type === InputType.password) {
-                input.type = 'password';
-            } else {
-                input.type = 'text';
+            input.type = InputType[this.type];
+
+            if (this.inputOptions.maxLength && (this.type === InputType.text || this.type === InputType.password)) {
+                input.maxLength = this.inputOptions.maxLength;
             }
+
+            if (this.inputOptions.min && this.type === InputType.number) {
+                input.min = this.inputOptions.min;
+            }
+            if (this.inputOptions.min && this.type === InputType.number) {
+                input.max = this.inputOptions.max;
+            }
+
 
             if (created) {
                 document.body.appendChild(input);
@@ -248,8 +264,17 @@ module Fabrique {
         {
             var text: string = '';
             if (this.type === InputType.password) {
-                for(let i = 0; i < this.value.length; i++) {
+                for (let i = 0; i < this.value.length; i++) {
                     text += '*';
+                }
+            }else if (this.type === InputType.number) {
+                var val = parseInt(this.value);
+                if (val < parseInt(this.inputOptions.min)) {
+                    text = this.inputOptions.min;
+                } else if (val > parseInt(this.inputOptions.max)) {
+                    text = this.inputOptions.max;
+                } else {
+                    text = this.value;
                 }
             } else {
                 text = this.value;
@@ -275,6 +300,16 @@ module Fabrique {
             this.removeDomElement();
 
             super.destroy();
+        }
+
+        /**
+         * Resets the text to an empty value
+         */
+        public resetText() {
+            this.value = "";
+            (<HTMLInputElement>document.getElementById(this.id)).value = this.value;
+            this.updateText();
+            this.endFocus();
         }
     }
 }

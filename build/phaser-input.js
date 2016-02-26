@@ -1,9 +1,9 @@
 /*!
- * phaser-input - version 0.1.3 
+ * phaser-input - version 0.1.4 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 23-02-2016
+ * Build at 26-02-2016
  * Released under MIT License 
  */
 
@@ -17,6 +17,7 @@ var Fabrique;
     (function (InputType) {
         InputType[InputType["text"] = 0] = "text";
         InputType[InputType["password"] = 1] = "password";
+        InputType[InputType["number"] = 2] = "number";
     })(Fabrique.InputType || (Fabrique.InputType = {}));
     var InputType = Fabrique.InputType;
     var InputField = (function (_super) {
@@ -37,6 +38,7 @@ var Fabrique;
              */
             this.blink = true;
             this.cnt = 0;
+            this.inputOptions = inputOptions;
             this.padding = inputOptions.padding || 0;
             this.createBox(inputOptions);
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
@@ -135,11 +137,15 @@ var Fabrique;
             input.style.top = (-100).toString() + 'px';
             input.style.left = (-100).toString() + 'px';
             input.value = this.value;
-            if (this.type === InputType.password) {
-                input.type = 'password';
+            input.type = InputType[this.type];
+            if (this.inputOptions.maxLength && (this.type === InputType.text || this.type === InputType.password)) {
+                input.maxLength = this.inputOptions.maxLength;
             }
-            else {
-                input.type = 'text';
+            if (this.inputOptions.min && this.type === InputType.number) {
+                input.min = this.inputOptions.min;
+            }
+            if (this.inputOptions.min && this.type === InputType.number) {
+                input.max = this.inputOptions.max;
             }
             if (created) {
                 document.body.appendChild(input);
@@ -198,6 +204,18 @@ var Fabrique;
                     text += '*';
                 }
             }
+            else if (this.type === InputType.number) {
+                var val = parseInt(this.value);
+                if (val < parseInt(this.inputOptions.min)) {
+                    text = this.inputOptions.min;
+                }
+                else if (val > parseInt(this.inputOptions.max)) {
+                    text = this.inputOptions.max;
+                }
+                else {
+                    text = this.value;
+                }
+            }
             else {
                 text = this.value;
             }
@@ -217,6 +235,15 @@ var Fabrique;
         InputField.prototype.destroy = function () {
             this.removeDomElement();
             _super.prototype.destroy.call(this);
+        };
+        /**
+         * Resets the text to an empty value
+         */
+        InputField.prototype.resetText = function () {
+            this.value = "";
+            document.getElementById(this.id).value = this.value;
+            this.updateText();
+            this.endFocus();
         };
         return InputField;
     })(Phaser.Sprite);

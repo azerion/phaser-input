@@ -13,10 +13,14 @@ declare module Fabrique {
         cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
+        maxLength?: number;
+        min?: string;
+        max?: string;
     }
     enum InputType {
         text = 0,
         password = 1,
+        number = 2,
     }
     class InputField extends Phaser.Sprite {
         private placeHolder;
@@ -31,6 +35,7 @@ declare module Fabrique {
         private padding;
         private callback;
         private id;
+        private inputOptions;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
         /**
          * Creates the nice box for the input field
@@ -84,6 +89,10 @@ declare module Fabrique {
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
          */
         destroy(): void;
+        /**
+         * Resets the text to an empty value
+         */
+        resetText(): void;
     }
 }
 declare module Fabrique {
