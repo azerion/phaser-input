@@ -32,6 +32,8 @@ module Fabrique {
 
         private text:Phaser.Text;
 
+        private offscreenText: Phaser.Text;
+
         public value:string = '';
 
         private inputOptions: InputOptions;
@@ -44,9 +46,12 @@ module Fabrique {
             this.inputOptions = inputOptions;
             this.inputOptions.width = inputOptions.width || 150;
             this.inputOptions.padding = inputOptions.padding || 0;
+            this.inputOptions.textAlign = inputOptions.textAlign || 'left';
+            this.inputOptions.type = inputOptions.type || InputType.text;
 
             this.createBox();
             this.createTextMask();
+            this.createDomElement();
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
                 this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, <Phaser.PhaserTextStyle>{
@@ -74,32 +79,33 @@ module Fabrique {
             this.text.mask = this.textMask;
             this.addChild(this.text);
 
-            if (this.inputOptions.textAlign) {
-                switch (this.inputOptions.textAlign) {
-                    case 'left':
-                        this.text.anchor.set(0, 0);
-                        break;
-                    case 'center':
-                        this.text.anchor.set(0.5, 0);
-                        this.text.x += this.inputOptions.width / 2;
-                        break;
-                    case 'right':
-                        this.text.anchor.set(1, 0);
-                        this.text.x += this.inputOptions.width;
-                        break;
-                }
-            }
+            this.offscreenText = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, '', <Phaser.PhaserTextStyle>{
+                font: inputOptions.font || '14px Arial',
+                fontWeight: inputOptions.fontWeight || 'normal',
+                fill: inputOptions.fill || '#000000'
+            });
 
-            if (inputOptions.type) {
-                this.type = inputOptions.type
+            switch (this.inputOptions.textAlign) {
+                case 'left':
+                    this.text.anchor.set(0, 0);
+                    this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
+                    break;
+                case 'center':
+                    this.text.anchor.set(0.5, 0);
+                    this.text.x += this.inputOptions.width / 2;
+                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width / 2  - this.text.width / 2  + this.getCaretPosition();
+                    break;
+                case 'right':
+                    this.text.anchor.set(1, 0);
+                    this.text.x += this.inputOptions.width;
+                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
+                    break;
             }
 
             this.inputEnabled = true;
             this.input.useHandCursor = true;
 
             this.game.input.onDown.add(this.checkDown, this);
-
-            this.createDomElement();
         }
 
         private createTextMask() {
@@ -195,16 +201,7 @@ module Fabrique {
         private createDomElement()
         {
             this.domElement = new InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
-            this.domElement.addKeyUpListener(this.keyListener.bind(this));
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
-        }
-
-        /**
-         * Removes the hidden input field and the key eventlistener
-         */
-        private removeDomElement()
-        {
-            this.domElement.removeEventListener();
         }
 
         /**
@@ -233,6 +230,8 @@ module Fabrique {
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
         private endFocus() {
+            this.domElement.removeEventListener();
+
             this.focus = false;
             if (this.value.length === 0 && null !== this.placeHolder) {
                 this.placeHolder.visible = true;
@@ -241,6 +240,8 @@ module Fabrique {
         }
 
         private startFocus() {
+            this.domElement.addKeyUpListener(this.keyListener.bind(this));
+
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(() => {
@@ -274,9 +275,55 @@ module Fabrique {
             } else {
                 text = this.value;
             }
+
             this.text.setText(text);
-            this.cursor.x = (this.inputOptions.textAlign === 'center') ? this.text.width * 0.5 : this.text.width;
-            this.cursor.x += this.inputOptions.padding;
+
+            if (this.text.width > this.inputOptions.width) {
+                this.text.anchor.x = 1;
+                this.text.x = this.inputOptions.padding + this.inputOptions.width;
+            } else {
+                switch (this.inputOptions.textAlign) {
+                    case 'left':
+                        this.text.anchor.set(0, 0);
+                        this.text.x = this.inputOptions.padding;
+                        break;
+                    case 'center':
+                        this.text.anchor.set(0.5, 0);
+                        this.text.x = this.inputOptions.padding + this.inputOptions.width / 2;
+                        break;
+                    case 'right':
+                        this.text.anchor.set(1, 0);
+                        this.text.x = this.inputOptions.padding + this.inputOptions.width;
+                        break;
+                }
+            }
+        }
+
+        private updateCursor() {
+            if (this.text.width > this.inputOptions.width || this.inputOptions.textAlign === 'right') {
+                this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
+            } else {
+                switch (this.inputOptions.textAlign) {
+                    case 'left':
+                        this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
+                        break;
+                    case 'center':
+                        this.cursor.x = this.inputOptions.padding + this.inputOptions.width / 2 - this.text.width / 2 + this.getCaretPosition();
+                        break;
+                }
+            }
+        }
+
+        private getCaretPosition() {
+            var caretPosition: number = this.domElement.getCaretPosition();
+
+            if (-1 === caretPosition) {
+                return this.text.width;
+            }
+
+            this.offscreenText.setText(this.value.slice(0, caretPosition));
+
+            return this.offscreenText.width;
         }
 
         /**
@@ -287,13 +334,14 @@ module Fabrique {
             this.value = this.domElement.value;
 
             this.updateText();
+            this.updateCursor();
         }
 
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
          */
         public destroy() {
-            this.removeDomElement();
+            this.domElement.destroy();
 
             super.destroy();
         }
@@ -305,6 +353,7 @@ module Fabrique {
             this.value = "";
             this.domElement.value = this.value;
             this.updateText();
+            this.updateCursor();
             this.endFocus();
         }
     }

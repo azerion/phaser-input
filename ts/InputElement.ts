@@ -37,9 +37,11 @@ module Fabrique {
         }
 
         public removeEventListener(): void {
-            document.body.removeChild(this.element);
-
             document.removeEventListener('keyup', this.callback);
+        }
+
+        public destroy() {
+            document.body.removeChild(this.element);
         }
 
         public setMax(max: string, min?: string) {
@@ -69,6 +71,13 @@ module Fabrique {
 
         public focus(): void {
             this.element.focus();
+        }
+
+        public getCaretPosition() {
+            if (this.type === InputType.number) {
+                return -1;
+            }
+            return this.element.selectionStart;
         }
     }
 }

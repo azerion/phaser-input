@@ -12,9 +12,11 @@ declare module Fabrique {
         constructor(id: string, type?: InputType, value?: string);
         addKeyUpListener(callback: () => void): void;
         removeEventListener(): void;
+        destroy(): void;
         setMax(max: string, min?: string): void;
         value: string;
         focus(): void;
+        getCaretPosition(): number;
     }
 }
 declare module Fabrique {
@@ -43,6 +45,7 @@ declare module Fabrique {
         private focus;
         private cursor;
         private text;
+        private offscreenText;
         value: string;
         private inputOptions;
         private domElement;
@@ -72,10 +75,6 @@ declare module Fabrique {
          */
         private createDomElement();
         /**
-         * Removes the hidden input field and the key eventlistener
-         */
-        private removeDomElement();
-        /**
          * Update function makes the cursor blink, it uses two private properties to make it toggle
          *
          * @returns {number}
@@ -92,6 +91,8 @@ declare module Fabrique {
          * Update the text value in the box, and make sure the cursor is positioned correctly
          */
         private updateText();
+        private updateCursor();
+        private getCaretPosition();
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
