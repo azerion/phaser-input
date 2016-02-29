@@ -24,7 +24,7 @@ module Fabrique {
 
         private box:Phaser.Graphics = null;
 
-        private textMask: Phaser.Graphics;
+        private textMask: TextMask;
 
         private focus:boolean = false;
 
@@ -43,15 +43,27 @@ module Fabrique {
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
+            //Parse the options
             this.inputOptions = inputOptions;
             this.inputOptions.width = inputOptions.width || 150;
             this.inputOptions.padding = inputOptions.padding || 0;
             this.inputOptions.textAlign = inputOptions.textAlign || 'left';
             this.inputOptions.type = inputOptions.type || InputType.text;
+            this.inputOptions.borderRadius = inputOptions.borderRadius || 0;
+            this.inputOptions.height = inputOptions.height || 14;
+            this.inputOptions.fillAlpha = inputOptions.fillAlpha || 1;
 
-            this.createBox();
-            this.createTextMask();
-            this.createDomElement();
+            //create the input box
+            this.box = new InputBox(this.game, inputOptions);
+            this.setTexture(this.box.generateTexture());
+
+            //create the mask that will be used for the texts
+            this.textMask = new TextMask(this.game, inputOptions);
+            this.addChild(this.textMask);
+
+            //Create the hidden dom elements
+            this.domElement = new InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
+            this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
                 this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, <Phaser.PhaserTextStyle>{
@@ -108,65 +120,6 @@ module Fabrique {
             this.game.input.onDown.add(this.checkDown, this);
         }
 
-        private createTextMask() {
-            var borderRadius = this.inputOptions.borderRadius || 0,
-                height = this.inputOptions.height || 14;
-
-            if (this.inputOptions.font) {
-                //fetch height from font;
-                height = Math.max(parseInt(this.inputOptions.font.substr(0, this.inputOptions.font.indexOf('px')), 10), height);
-            }
-            var width = this.inputOptions.width;
-
-
-            this.textMask = new Phaser.Graphics(this.game, this.inputOptions.padding, this.inputOptions.padding);
-            this.textMask.beginFill(0x000000);
-
-            if (borderRadius > 0) {
-                this.textMask.drawRoundedRect(0, 0, width, height, borderRadius);
-            } else {
-                this.textMask.drawRect(0, 0, width, height);
-            }
-
-            this.addChild(this.textMask);
-        }
-
-        /**
-         * Creates the nice box for the input field
-         *
-         * @param inputOptions
-         */
-        private createBox() {
-            var bgColor:number = (this.inputOptions.backgroundColor) ? parseInt(this.inputOptions.backgroundColor.slice(1), 16) : 0xffffff,
-                borderRadius = this.inputOptions.borderRadius || 0,
-                borderColor:number = (this.inputOptions.borderColor) ? parseInt(this.inputOptions.borderColor.slice(1), 16) : 0x959595,
-                alpha: number = (this.inputOptions.fillAlpha !== undefined) ? this.inputOptions.fillAlpha : 1,
-                height = this.inputOptions.height || 14;
-
-            if (this.inputOptions.font) {
-                //fetch height from font;
-                height = Math.max(parseInt(this.inputOptions.font.substr(0, this.inputOptions.font.indexOf('px')), 10), height);
-            }
-
-            height = this.inputOptions.padding * 2 + height;
-            var width = this.inputOptions.width;
-            width = this.inputOptions.padding * 2 + width;
-
-
-            this.box = new Phaser.Graphics(this.game, 0, 0);
-            this.box.beginFill(bgColor, alpha)
-                .lineStyle(this.inputOptions.borderWidth || 1, borderColor, alpha);
-
-            if (borderRadius > 0) {
-                this.box.drawRoundedRect(0, 0, width, height, borderRadius);
-            } else {
-                this.box.drawRect(0, 0, width, height);
-            }
-
-
-            this.setTexture(this.box.generateTexture());
-        }
-
         /**
          * This is a generic input down handler for the game.
          * if the input object is clicked, we gain focus on it and create the dom element
@@ -190,18 +143,6 @@ module Fabrique {
                     this.endFocus()
                 }
             }
-        }
-
-        /**
-         * Creates a hidden input field, makes sure focus is added to it.
-         * This is all to ensure mobile keyboard are also opened
-         *
-         * And last, but not least, we register an event handler
-         */
-        private createDomElement()
-        {
-            this.domElement = new InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
-            this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
         }
 
         /**
@@ -299,6 +240,9 @@ module Fabrique {
             }
         }
 
+        /**
+         * Updates the position of the caret in the phaser input field
+         */
         private updateCursor() {
             if (this.text.width > this.inputOptions.width || this.inputOptions.textAlign === 'right') {
                 this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
@@ -314,6 +258,11 @@ module Fabrique {
             }
         }
 
+        /**
+         * Fetches the carrot position from the dom element. This one changes when you use the keyboard to navigate the element
+         *
+         * @returns {number}
+         */
         private getCaretPosition() {
             var caretPosition: number = this.domElement.getCaretPosition();
             if (-1 === caretPosition) {

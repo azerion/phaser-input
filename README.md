@@ -86,6 +86,7 @@ Tested on:
 Changelog
 ---------
 ### 0.2.0
+* Updated example
 * Added masking for texts so they don't overflow the box anymore
 * Combined max/maxLength
 * Moved dom manipulation to seperate class

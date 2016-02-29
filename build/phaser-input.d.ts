@@ -50,13 +50,6 @@ declare module Fabrique {
         private inputOptions;
         private domElement;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
-        private createTextMask();
-        /**
-         * Creates the nice box for the input field
-         *
-         * @param inputOptions
-         */
-        private createBox();
         /**
          * This is a generic input down handler for the game.
          * if the input object is clicked, we gain focus on it and create the dom element
@@ -67,13 +60,6 @@ declare module Fabrique {
          * @param e Phaser.Pointer
          */
         private checkDown(e);
-        /**
-         * Creates a hidden input field, makes sure focus is added to it.
-         * This is all to ensure mobile keyboard are also opened
-         *
-         * And last, but not least, we register an event handler
-         */
-        private createDomElement();
         /**
          * Update function makes the cursor blink, it uses two private properties to make it toggle
          *
@@ -91,7 +77,15 @@ declare module Fabrique {
          * Update the text value in the box, and make sure the cursor is positioned correctly
          */
         private updateText();
+        /**
+         * Updates the position of the caret in the phaser input field
+         */
         private updateCursor();
+        /**
+         * Fetches the carrot position from the dom element. This one changes when you use the keyboard to navigate the element
+         *
+         * @returns {number}
+         */
         private getCaretPosition();
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
@@ -105,6 +99,16 @@ declare module Fabrique {
          * Resets the text to an empty value
          */
         resetText(): void;
+    }
+}
+declare module Fabrique {
+    class InputBox extends Phaser.Graphics {
+        constructor(game: Phaser.Game, inputOptions: InputOptions);
+    }
+}
+declare module Fabrique {
+    class TextMask extends Phaser.Graphics {
+        constructor(game: Phaser.Game, inputOptions: InputOptions);
     }
 }
 declare module Fabrique {
