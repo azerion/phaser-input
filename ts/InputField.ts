@@ -259,11 +259,11 @@ module Fabrique {
         private updateText()
         {
             var text: string = '';
-            if (this.type === InputType.password) {
+            if (this.inputOptions.type === InputType.password) {
                 for (let i = 0; i < this.value.length; i++) {
                     text += '*';
                 }
-            }else if (this.type === InputType.number) {
+            }else if (this.inputOptions.type === InputType.number) {
                 var val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
                     text = this.inputOptions.min;
@@ -316,12 +316,19 @@ module Fabrique {
 
         private getCaretPosition() {
             var caretPosition: number = this.domElement.getCaretPosition();
-
             if (-1 === caretPosition) {
                 return this.text.width;
             }
 
-            this.offscreenText.setText(this.value.slice(0, caretPosition));
+            var text = this.value;
+            if (this.inputOptions.type === InputType.password) {
+                text = '';
+                for (let i = 0; i < this.value.length; i++) {
+                    text += '*';
+                }
+            }
+
+            this.offscreenText.setText(text.slice(0, caretPosition));
 
             return this.offscreenText.width;
         }

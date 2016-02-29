@@ -263,12 +263,12 @@ var Fabrique;
          */
         InputField.prototype.updateText = function () {
             var text = '';
-            if (this.type === Fabrique.InputType.password) {
+            if (this.inputOptions.type === Fabrique.InputType.password) {
                 for (var i = 0; i < this.value.length; i++) {
                     text += '*';
                 }
             }
-            else if (this.type === Fabrique.InputType.number) {
+            else if (this.inputOptions.type === Fabrique.InputType.number) {
                 var val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
                     text = this.inputOptions.min;
@@ -325,7 +325,14 @@ var Fabrique;
             if (-1 === caretPosition) {
                 return this.text.width;
             }
-            this.offscreenText.setText(this.value.slice(0, caretPosition));
+            var text = this.value;
+            if (this.inputOptions.type === Fabrique.InputType.password) {
+                text = '';
+                for (var i = 0; i < this.value.length; i++) {
+                    text += '*';
+                }
+            }
+            this.offscreenText.setText(text.slice(0, caretPosition));
             return this.offscreenText.width;
         };
         /**
