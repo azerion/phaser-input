@@ -28,7 +28,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-typescript": "0.8.0",
     "phaser": "2.4.6",
-    "typescript": "1.6.x"
+    "typescript": "1.8.x"
   },
   "engines": {
     "node": "5.x.x"

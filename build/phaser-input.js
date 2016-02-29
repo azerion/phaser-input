@@ -1,17 +1,3 @@
-/*!
- * phaser-input - version 0.1.4 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
- *
- * OrangeGames
- * Build at 26-02-2016
- * Released under MIT License 
- */
-
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -20,6 +6,68 @@ var Fabrique;
         InputType[InputType["number"] = 2] = "number";
     })(Fabrique.InputType || (Fabrique.InputType = {}));
     var InputType = Fabrique.InputType;
+    var InputElement = (function () {
+        function InputElement(id, type, value) {
+            if (type === void 0) { type = InputType.text; }
+            if (value === void 0) { value = ''; }
+            this.id = id;
+            this.type = type;
+            this.element = document.createElement('input');
+            this.element.id = id;
+            this.element.style.position = 'absolute';
+            this.element.style.top = (-100).toString() + 'px';
+            this.element.style.left = (-100).toString() + 'px';
+            this.element.value = this.value;
+            this.element.type = InputType[type];
+            document.body.appendChild(this.element);
+        }
+        InputElement.prototype.addKeyUpListener = function (callback) {
+            this.callback = callback;
+            document.addEventListener('keyup', this.callback);
+        };
+        InputElement.prototype.removeEventListener = function () {
+            document.body.removeChild(this.element);
+            document.removeEventListener('keyup', this.callback);
+        };
+        InputElement.prototype.setMax = function (max, min) {
+            if (max === undefined) {
+                return;
+            }
+            if (this.type === InputType.text || this.type === InputType.password) {
+                this.element.maxLength = parseInt(max, 10);
+            }
+            else if (this.type === InputType.number) {
+                this.element.max = max;
+                if (min === undefined) {
+                    return;
+                }
+                this.element.min = min;
+            }
+        };
+        Object.defineProperty(InputElement.prototype, "value", {
+            get: function () {
+                return this.element.value;
+            },
+            set: function (value) {
+                this.element.value = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        InputElement.prototype.focus = function () {
+            this.element.focus();
+        };
+        return InputElement;
+    })();
+    Fabrique.InputElement = InputElement;
+})(Fabrique || (Fabrique = {}));
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var Fabrique;
+(function (Fabrique) {
     var InputField = (function (_super) {
         __extends(InputField, _super);
         function InputField(game, x, y, inputOptions) {
@@ -28,7 +76,7 @@ var Fabrique;
             this.placeHolder = null;
             this.box = null;
             this.focus = false;
-            this.type = InputType.text;
+            this.type = Fabrique.InputType.text;
             this.value = '';
             this.id = 'phaser-input-' + (Math.random() * 10000 | 0).toString();
             /**
@@ -39,6 +87,7 @@ var Fabrique;
             this.blink = true;
             this.cnt = 0;
             this.inputOptions = inputOptions;
+            this.inputOptions.width = inputOptions.width || 150;
             this.padding = inputOptions.padding || 0;
             this.createBox(inputOptions);
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
@@ -62,6 +111,21 @@ var Fabrique;
                 fill: inputOptions.fill || '#000000'
             });
             this.addChild(this.text);
+            if (this.inputOptions.textAlign) {
+                switch (this.inputOptions.textAlign) {
+                    case 'left':
+                        this.text.anchor.set(0, 0);
+                        break;
+                    case 'center':
+                        this.text.anchor.set(0.5, 0);
+                        this.text.x += this.inputOptions.width / 2;
+                        break;
+                    case 'right':
+                        this.text.anchor.set(1, 0);
+                        this.text.x += this.inputOptions.width;
+                        break;
+                }
+            }
             if (inputOptions.type) {
                 this.type = inputOptions.type;
             }
@@ -82,7 +146,7 @@ var Fabrique;
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
             height = this.padding * 2 + height;
-            var width = inputOptions.width || 150;
+            var width = this.inputOptions.width;
             width = this.padding * 2 + width;
             this.box = new Phaser.Graphics(this.game, 0, 0);
             this.box.beginFill(bgColor, alpha)
@@ -125,41 +189,15 @@ var Fabrique;
          * And last, but not least, we register an event handler
          */
         InputField.prototype.createDomElement = function () {
-            var _this = this;
-            var input = document.getElementById(this.id);
-            var created = false;
-            if (null === input) {
-                input = document.createElement('input');
-                created = true;
-            }
-            input.id = this.id;
-            input.style.position = 'absolute';
-            input.style.top = (-100).toString() + 'px';
-            input.style.left = (-100).toString() + 'px';
-            input.value = this.value;
-            input.type = InputType[this.type];
-            if (this.inputOptions.maxLength && (this.type === InputType.text || this.type === InputType.password)) {
-                input.maxLength = this.inputOptions.maxLength;
-            }
-            if (this.inputOptions.min && this.type === InputType.number) {
-                input.min = this.inputOptions.min;
-            }
-            if (this.inputOptions.min && this.type === InputType.number) {
-                input.max = this.inputOptions.max;
-            }
-            if (created) {
-                document.body.appendChild(input);
-            }
-            this.callback = function () { return _this.keyListener(); };
-            document.addEventListener('keyup', this.callback);
+            this.domElement = new Fabrique.InputElement(this.id, this.inputOptions.type, this.value);
+            this.domElement.addKeyUpListener(this.keyListener.bind(this));
+            this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
         };
         /**
          * Removes the hidden input field and the key eventlistener
          */
         InputField.prototype.removeDomElement = function () {
-            var input = document.getElementById(this.id);
-            document.body.removeChild(input);
-            document.removeEventListener('keyup', this.callback);
+            this.domElement.removeEventListener();
         };
         InputField.prototype.update = function () {
             if (!this.focus) {
@@ -183,15 +221,15 @@ var Fabrique;
             this.cursor.visible = false;
         };
         InputField.prototype.startFocus = function () {
-            var input = document.getElementById(this.id);
+            var _this = this;
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(function () {
-                    input.focus();
+                    _this.domElement.focus();
                 }, 0);
             }
             else {
-                input.focus();
+                this.domElement.focus();
             }
         };
         /**
@@ -199,12 +237,12 @@ var Fabrique;
          */
         InputField.prototype.updateText = function () {
             var text = '';
-            if (this.type === InputType.password) {
+            if (this.type === Fabrique.InputType.password) {
                 for (var i = 0; i < this.value.length; i++) {
                     text += '*';
                 }
             }
-            else if (this.type === InputType.number) {
+            else if (this.type === Fabrique.InputType.number) {
                 var val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
                     text = this.inputOptions.min;
@@ -220,13 +258,14 @@ var Fabrique;
                 text = this.value;
             }
             this.text.setText(text);
-            this.cursor.x = this.text.width + this.padding;
+            this.cursor.x = (this.inputOptions.textAlign === 'center') ? this.text.width * 0.5 : this.text.width;
+            this.cursor.x += this.padding;
         };
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
         InputField.prototype.keyListener = function () {
-            this.value = document.getElementById(this.id).value;
+            this.value = this.domElement.value;
             this.updateText();
         };
         /**
@@ -241,7 +280,7 @@ var Fabrique;
          */
         InputField.prototype.resetText = function () {
             this.value = "";
-            document.getElementById(this.id).value = this.value;
+            this.domElement.value = this.value;
             this.updateText();
             this.endFocus();
         };

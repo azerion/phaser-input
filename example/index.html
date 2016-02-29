@@ -11,9 +11,21 @@
     <script type="text/javascript" src="../node_modules/phaser/build/phaser.js"></script>
     <script type="text/javascript" src="../build/phaser-input.js"></script>
 
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            box-shadow: 0px 0px 5px black;
+            margin: 20px auto;
+        }
+    </style>
+
     <!-- Game we want to track -->
     <script type="text/javascript">
-        var game = new Phaser.Game(500, 300, Phaser.AUTO, '', { create: create}, true);
+        var game = new Phaser.Game(200, 250, Phaser.AUTO, '', { create: create}, true);
         Phaser.Device.whenReady(function () {
             game.plugins.add(Fabrique.Plugins.InputField);
         });

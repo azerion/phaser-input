@@ -1,4 +1,23 @@
 declare module Fabrique {
+    enum InputType {
+        text = 0,
+        password = 1,
+        number = 2,
+    }
+    class InputElement {
+        private element;
+        private callback;
+        private type;
+        private id;
+        constructor(id: string, type?: InputType, value?: string);
+        addKeyUpListener(callback: () => void): void;
+        removeEventListener(): void;
+        setMax(max: string, min?: string): void;
+        value: string;
+        focus(): void;
+    }
+}
+declare module Fabrique {
     interface InputOptions extends Phaser.PhaserTextStyle {
         x?: number;
         y?: number;
@@ -13,14 +32,9 @@ declare module Fabrique {
         cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
-        maxLength?: number;
         min?: string;
         max?: string;
-    }
-    enum InputType {
-        text = 0,
-        password = 1,
-        number = 2,
+        textAlign?: string;
     }
     class InputField extends Phaser.Sprite {
         private placeHolder;
@@ -33,9 +47,9 @@ declare module Fabrique {
         private registered;
         private shift;
         private padding;
-        private callback;
         private id;
         private inputOptions;
+        private domElement;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
         /**
          * Creates the nice box for the input field

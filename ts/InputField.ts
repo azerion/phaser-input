@@ -1,4 +1,5 @@
 module Fabrique {
+    import Text = Phaser.Text;
     export interface InputOptions extends Phaser.PhaserTextStyle {
         x?: number;
         y?: number;
@@ -13,15 +14,9 @@ module Fabrique {
         cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
-        maxLength?: number;
         min?: string;
         max?: string;
-    }
-
-    export enum InputType {
-        text,
-        password,
-        number
+        textAlign?: string;
     }
 
     export class InputField extends Phaser.Sprite {
@@ -45,16 +40,17 @@ module Fabrique {
 
         private padding: number;
 
-        private callback: () => void;
-
         private id: string = 'phaser-input-' + (Math.random() * 10000 | 0).toString();
 
         private inputOptions: InputOptions;
+
+        private domElement: InputElement;
 
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
             this.inputOptions = inputOptions;
+            this.inputOptions.width = inputOptions.width || 150;
 
             this.padding = inputOptions.padding || 0;
             this.createBox(inputOptions);
@@ -82,6 +78,22 @@ module Fabrique {
                 fill: inputOptions.fill || '#000000'
             });
             this.addChild(this.text);
+
+            if (this.inputOptions.textAlign) {
+                switch (this.inputOptions.textAlign) {
+                    case 'left':
+                        this.text.anchor.set(0, 0);
+                        break;
+                    case 'center':
+                        this.text.anchor.set(0.5, 0);
+                        this.text.x += this.inputOptions.width / 2;
+                        break;
+                    case 'right':
+                        this.text.anchor.set(1, 0);
+                        this.text.x += this.inputOptions.width;
+                        break;
+                }
+            }
 
             if (inputOptions.type) {
                 this.type = inputOptions.type
@@ -113,7 +125,7 @@ module Fabrique {
             }
 
             height = this.padding * 2 + height;
-            var width = inputOptions.width || 150;
+            var width = this.inputOptions.width;
             width = this.padding * 2 + width;
 
 
@@ -164,40 +176,9 @@ module Fabrique {
          */
         private createDomElement()
         {
-            var input:HTMLInputElement = <HTMLInputElement>document.getElementById(this.id);
-            var created: boolean = false;
-
-            if (null === input) {
-                input = document.createElement('input');
-                created = true;
-            }
-
-            input.id = this.id;
-            input.style.position = 'absolute';
-            input.style.top = (-100).toString() + 'px';
-            input.style.left = (-100).toString() + 'px';
-            input.value = this.value;
-
-            input.type = InputType[this.type];
-
-            if (this.inputOptions.maxLength && (this.type === InputType.text || this.type === InputType.password)) {
-                input.maxLength = this.inputOptions.maxLength;
-            }
-
-            if (this.inputOptions.min && this.type === InputType.number) {
-                input.min = this.inputOptions.min;
-            }
-            if (this.inputOptions.min && this.type === InputType.number) {
-                input.max = this.inputOptions.max;
-            }
-
-
-            if (created) {
-                document.body.appendChild(input);
-            }
-
-            this.callback = () => this.keyListener();
-            document.addEventListener('keyup', this.callback);
+            this.domElement = new InputElement(this.id, this.inputOptions.type, this.value);
+            this.domElement.addKeyUpListener(this.keyListener.bind(this));
+            this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
         }
 
         /**
@@ -205,10 +186,7 @@ module Fabrique {
          */
         private removeDomElement()
         {
-            var input = document.getElementById(this.id);
-            document.body.removeChild(input);
-
-            document.removeEventListener('keyup', this.callback);
+            this.domElement.removeEventListener();
         }
 
         /**
@@ -245,14 +223,13 @@ module Fabrique {
         }
 
         private startFocus() {
-            var input = document.getElementById(this.id);
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(() => {
-                    input.focus();
+                    this.domElement.focus();
                 }, 0);
             } else {
-                input.focus();
+                this.domElement.focus();
             }
 
         }
@@ -280,7 +257,8 @@ module Fabrique {
                 text = this.value;
             }
             this.text.setText(text);
-            this.cursor.x = this.text.width + this.padding;
+            this.cursor.x = (this.inputOptions.textAlign === 'center') ? this.text.width * 0.5 : this.text.width;
+            this.cursor.x += this.padding;
         }
 
         /**
@@ -288,7 +266,7 @@ module Fabrique {
          */
         private keyListener()
         {
-            this.value = (<HTMLInputElement>document.getElementById(this.id)).value;
+            this.value = this.domElement.value;
 
             this.updateText();
         }
@@ -307,7 +285,7 @@ module Fabrique {
          */
         public resetText() {
             this.value = "";
-            (<HTMLInputElement>document.getElementById(this.id)).value = this.value;
+            this.domElement.value = this.value;
             this.updateText();
             this.endFocus();
         }
