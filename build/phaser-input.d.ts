@@ -39,24 +39,21 @@ declare module Fabrique {
     class InputField extends Phaser.Sprite {
         private placeHolder;
         private box;
+        private textMask;
         private focus;
         private cursor;
         private text;
-        type: InputType;
         value: string;
-        private registered;
-        private shift;
-        private padding;
-        private id;
         private inputOptions;
         private domElement;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
+        private createTextMask();
         /**
          * Creates the nice box for the input field
          *
          * @param inputOptions
          */
-        private createBox(inputOptions);
+        private createBox();
         /**
          * This is a generic input down handler for the game.
          * if the input object is clicked, we gain focus on it and create the dom element

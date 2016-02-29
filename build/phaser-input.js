@@ -76,9 +76,7 @@ var Fabrique;
             this.placeHolder = null;
             this.box = null;
             this.focus = false;
-            this.type = Fabrique.InputType.text;
             this.value = '';
-            this.id = 'phaser-input-' + (Math.random() * 10000 | 0).toString();
             /**
              * Update function makes the cursor blink, it uses two private properties to make it toggle
              *
@@ -88,28 +86,31 @@ var Fabrique;
             this.cnt = 0;
             this.inputOptions = inputOptions;
             this.inputOptions.width = inputOptions.width || 150;
-            this.padding = inputOptions.padding || 0;
-            this.createBox(inputOptions);
+            this.inputOptions.padding = inputOptions.padding || 0;
+            this.createBox();
+            this.createTextMask();
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
-                this.placeHolder = new Phaser.Text(game, this.padding, this.padding, inputOptions.placeHolder, {
+                this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, {
                     font: inputOptions.font || '14px Arial',
                     fontWeight: inputOptions.fontWeight || 'normal',
                     fill: inputOptions.placeHolderColor || '#bfbebd'
                 });
+                this.placeHolder.mask = this.textMask;
                 this.addChild(this.placeHolder);
             }
-            this.cursor = new Phaser.Text(game, this.padding, this.padding - 2, '|', {
+            this.cursor = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding - 2, '|', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.cursorColor || '#000000'
             });
             this.cursor.visible = false;
             this.addChild(this.cursor);
-            this.text = new Phaser.Text(game, this.padding, this.padding, '', {
+            this.text = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, '', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.fill || '#000000'
             });
+            this.text.mask = this.textMask;
             this.addChild(this.text);
             if (this.inputOptions.textAlign) {
                 switch (this.inputOptions.textAlign) {
@@ -134,23 +135,40 @@ var Fabrique;
             this.game.input.onDown.add(this.checkDown, this);
             this.createDomElement();
         }
+        InputField.prototype.createTextMask = function () {
+            var borderRadius = this.inputOptions.borderRadius || 0, height = this.inputOptions.height || 14;
+            if (this.inputOptions.font) {
+                //fetch height from font;
+                height = Math.max(parseInt(this.inputOptions.font.substr(0, this.inputOptions.font.indexOf('px')), 10), height);
+            }
+            var width = this.inputOptions.width;
+            this.textMask = new Phaser.Graphics(this.game, this.inputOptions.padding, this.inputOptions.padding);
+            this.textMask.beginFill(0x000000);
+            if (borderRadius > 0) {
+                this.textMask.drawRoundedRect(0, 0, width, height, borderRadius);
+            }
+            else {
+                this.textMask.drawRect(0, 0, width, height);
+            }
+            this.addChild(this.textMask);
+        };
         /**
          * Creates the nice box for the input field
          *
          * @param inputOptions
          */
-        InputField.prototype.createBox = function (inputOptions) {
-            var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff, borderRadius = inputOptions.borderRadius || 0, borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595, alpha = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1, height = inputOptions.height || 14;
-            if (inputOptions.font) {
+        InputField.prototype.createBox = function () {
+            var bgColor = (this.inputOptions.backgroundColor) ? parseInt(this.inputOptions.backgroundColor.slice(1), 16) : 0xffffff, borderRadius = this.inputOptions.borderRadius || 0, borderColor = (this.inputOptions.borderColor) ? parseInt(this.inputOptions.borderColor.slice(1), 16) : 0x959595, alpha = (this.inputOptions.fillAlpha !== undefined) ? this.inputOptions.fillAlpha : 1, height = this.inputOptions.height || 14;
+            if (this.inputOptions.font) {
                 //fetch height from font;
-                height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
+                height = Math.max(parseInt(this.inputOptions.font.substr(0, this.inputOptions.font.indexOf('px')), 10), height);
             }
-            height = this.padding * 2 + height;
+            height = this.inputOptions.padding * 2 + height;
             var width = this.inputOptions.width;
-            width = this.padding * 2 + width;
+            width = this.inputOptions.padding * 2 + width;
             this.box = new Phaser.Graphics(this.game, 0, 0);
             this.box.beginFill(bgColor, alpha)
-                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha);
+                .lineStyle(this.inputOptions.borderWidth || 1, borderColor, alpha);
             if (borderRadius > 0) {
                 this.box.drawRoundedRect(0, 0, width, height, borderRadius);
             }
@@ -189,7 +207,7 @@ var Fabrique;
          * And last, but not least, we register an event handler
          */
         InputField.prototype.createDomElement = function () {
-            this.domElement = new Fabrique.InputElement(this.id, this.inputOptions.type, this.value);
+            this.domElement = new Fabrique.InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.addKeyUpListener(this.keyListener.bind(this));
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
         };
@@ -259,7 +277,7 @@ var Fabrique;
             }
             this.text.setText(text);
             this.cursor.x = (this.inputOptions.textAlign === 'center') ? this.text.width * 0.5 : this.text.width;
-            this.cursor.x += this.padding;
+            this.cursor.x += this.inputOptions.padding;
         };
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own

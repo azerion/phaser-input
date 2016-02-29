@@ -24,23 +24,15 @@ module Fabrique {
 
         private box:Phaser.Graphics = null;
 
+        private textMask: Phaser.Graphics;
+
         private focus:boolean = false;
 
         private cursor:Phaser.Text;
 
         private text:Phaser.Text;
 
-        public type: InputType = InputType.text;
-
         public value:string = '';
-
-        private registered: boolean;
-
-        private shift: Phaser.Key;
-
-        private padding: number;
-
-        private id: string = 'phaser-input-' + (Math.random() * 10000 | 0).toString();
 
         private inputOptions: InputOptions;
 
@@ -51,20 +43,22 @@ module Fabrique {
 
             this.inputOptions = inputOptions;
             this.inputOptions.width = inputOptions.width || 150;
+            this.inputOptions.padding = inputOptions.padding || 0;
 
-            this.padding = inputOptions.padding || 0;
-            this.createBox(inputOptions);
+            this.createBox();
+            this.createTextMask();
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
-                this.placeHolder = new Phaser.Text(game, this.padding, this.padding, inputOptions.placeHolder, <Phaser.PhaserTextStyle>{
+                this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, <Phaser.PhaserTextStyle>{
                     font: inputOptions.font || '14px Arial',
                     fontWeight: inputOptions.fontWeight || 'normal',
                     fill: inputOptions.placeHolderColor || '#bfbebd'
                 });
+                this.placeHolder.mask = this.textMask;
                 this.addChild(this.placeHolder);
             }
 
-            this.cursor = new Phaser.Text(game, this.padding, this.padding - 2, '|', <Phaser.PhaserTextStyle>{
+            this.cursor = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding - 2, '|', <Phaser.PhaserTextStyle>{
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.cursorColor || '#000000'
@@ -72,11 +66,12 @@ module Fabrique {
             this.cursor.visible = false;
             this.addChild(this.cursor);
 
-            this.text = new Phaser.Text(game, this.padding, this.padding, '', <Phaser.PhaserTextStyle>{
+            this.text = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, '', <Phaser.PhaserTextStyle>{
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.fill || '#000000'
             });
+            this.text.mask = this.textMask;
             this.addChild(this.text);
 
             if (this.inputOptions.textAlign) {
@@ -107,31 +102,54 @@ module Fabrique {
             this.createDomElement();
         }
 
+        private createTextMask() {
+            var borderRadius = this.inputOptions.borderRadius || 0,
+                height = this.inputOptions.height || 14;
+
+            if (this.inputOptions.font) {
+                //fetch height from font;
+                height = Math.max(parseInt(this.inputOptions.font.substr(0, this.inputOptions.font.indexOf('px')), 10), height);
+            }
+            var width = this.inputOptions.width;
+
+
+            this.textMask = new Phaser.Graphics(this.game, this.inputOptions.padding, this.inputOptions.padding);
+            this.textMask.beginFill(0x000000);
+
+            if (borderRadius > 0) {
+                this.textMask.drawRoundedRect(0, 0, width, height, borderRadius);
+            } else {
+                this.textMask.drawRect(0, 0, width, height);
+            }
+
+            this.addChild(this.textMask);
+        }
+
         /**
          * Creates the nice box for the input field
          *
          * @param inputOptions
          */
-        private createBox(inputOptions:InputOptions) {
-            var bgColor:number = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff,
-                borderRadius = inputOptions.borderRadius || 0,
-                borderColor:number = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595,
-                alpha: number = (inputOptions.fillAlpha !== undefined) ? inputOptions.fillAlpha : 1,
-                height = inputOptions.height || 14;
+        private createBox() {
+            var bgColor:number = (this.inputOptions.backgroundColor) ? parseInt(this.inputOptions.backgroundColor.slice(1), 16) : 0xffffff,
+                borderRadius = this.inputOptions.borderRadius || 0,
+                borderColor:number = (this.inputOptions.borderColor) ? parseInt(this.inputOptions.borderColor.slice(1), 16) : 0x959595,
+                alpha: number = (this.inputOptions.fillAlpha !== undefined) ? this.inputOptions.fillAlpha : 1,
+                height = this.inputOptions.height || 14;
 
-            if (inputOptions.font) {
+            if (this.inputOptions.font) {
                 //fetch height from font;
-                height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
+                height = Math.max(parseInt(this.inputOptions.font.substr(0, this.inputOptions.font.indexOf('px')), 10), height);
             }
 
-            height = this.padding * 2 + height;
+            height = this.inputOptions.padding * 2 + height;
             var width = this.inputOptions.width;
-            width = this.padding * 2 + width;
+            width = this.inputOptions.padding * 2 + width;
 
 
             this.box = new Phaser.Graphics(this.game, 0, 0);
             this.box.beginFill(bgColor, alpha)
-                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha);
+                .lineStyle(this.inputOptions.borderWidth || 1, borderColor, alpha);
 
             if (borderRadius > 0) {
                 this.box.drawRoundedRect(0, 0, width, height, borderRadius);
@@ -176,7 +194,7 @@ module Fabrique {
          */
         private createDomElement()
         {
-            this.domElement = new InputElement(this.id, this.inputOptions.type, this.value);
+            this.domElement = new InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.addKeyUpListener(this.keyListener.bind(this));
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
         }
@@ -258,7 +276,7 @@ module Fabrique {
             }
             this.text.setText(text);
             this.cursor.x = (this.inputOptions.textAlign === 'center') ? this.text.width * 0.5 : this.text.width;
-            this.cursor.x += this.padding;
+            this.cursor.x += this.inputOptions.padding;
         }
 
         /**
