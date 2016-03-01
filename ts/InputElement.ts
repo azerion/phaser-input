@@ -73,11 +73,34 @@ module Fabrique {
             this.element.focus();
         }
 
+        get hasSelection () {
+            if (this.type === InputType.number) {
+                return false;
+            }
+
+            return this.element.selectionStart !== this.element.selectionEnd;
+        }
+
+        get caretStart() {
+            return this.element.selectionEnd;
+        }
+
+        get caretEnd() {
+            return this.element.selectionStart;
+        }
+
         public getCaretPosition() {
             if (this.type === InputType.number) {
                 return -1;
             }
             return this.element.selectionStart;
+        }
+
+        public setCaretPosition(pos: number) {
+            if (this.type === InputType.number) {
+                return ;
+            }
+            this.element.setSelectionRange(pos, pos);
         }
     }
 }

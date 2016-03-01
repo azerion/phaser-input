@@ -17,6 +17,7 @@ module Fabrique {
         min?: string;
         max?: string;
         textAlign?: string;
+        selectionColor?: string;
     }
 
     export class InputField extends Phaser.Sprite {
@@ -40,6 +41,8 @@ module Fabrique {
 
         private domElement: InputElement;
 
+        private selection: SelectionHighlight;
+
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
@@ -51,7 +54,8 @@ module Fabrique {
             this.inputOptions.type = inputOptions.type || InputType.text;
             this.inputOptions.borderRadius = inputOptions.borderRadius || 0;
             this.inputOptions.height = inputOptions.height || 14;
-            this.inputOptions.fillAlpha = inputOptions.fillAlpha || 1;
+            this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
+            this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
 
             //create the input box
             this.box = new InputBox(this.game, inputOptions);
@@ -64,6 +68,9 @@ module Fabrique {
             //Create the hidden dom elements
             this.domElement = new InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
+
+            this.selection = new SelectionHighlight(this.game, this.inputOptions);
+            this.addChild(this.selection);
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
                 this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, <Phaser.PhaserTextStyle>{
@@ -132,6 +139,11 @@ module Fabrique {
         private checkDown(e: Phaser.Pointer): void
         {
             if (this.input.checkPointerOver(e)) {
+                if (this.focus) {
+                    this.setCaretOnclick(e);
+                    return;
+                }
+
                 this.focus = true;
                 if (null !== this.placeHolder) {
                     this.placeHolder.visible = false;
@@ -180,6 +192,9 @@ module Fabrique {
             this.cursor.visible = false;
         }
 
+        /**
+         *
+         */
         private startFocus() {
             this.domElement.addKeyUpListener(this.keyListener.bind(this));
 
@@ -283,6 +298,67 @@ module Fabrique {
         }
 
         /**
+         * Set the caret when a click was made in the input field
+         *
+         * @param e
+         */
+        private setCaretOnclick(e: Phaser.Pointer) {
+            var localX: number = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.stage)).x;
+            if (this.inputOptions.textAlign && this.inputOptions.textAlign === 'center') {
+                localX += this.text.width / 2;
+            }
+
+            var characterWidth: number = this.text.width / this.value.length;
+            var index: number  = 0;
+            for (let i: number = 0; i < this.value.length; i++) {
+                if (localX >= i * characterWidth && localX <= (i + 1) * characterWidth) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (localX > (this.value.length - 1) * characterWidth) {
+                index = this.value.length;
+            }
+
+            this.startFocus();
+
+            this.domElement.setCaretPosition(index);
+
+            this.updateCursor();
+        }
+
+        /**
+         * This checks if a select has been made, and if so highlight it with blue
+         */
+        private updateSelection(): void {
+            if (this.domElement.hasSelection) {
+                var text = this.value;
+                if (this.inputOptions.type === InputType.password) {
+                    text = '';
+                    for (let i = 0; i < this.value.length; i++) {
+                        text += '*';
+                    }
+                }
+                text = text.substring(this.domElement.caretStart, this.domElement.caretEnd);
+                this.offscreenText.setText(text);
+
+                this.selection.updateSelection(this.offscreenText.getBounds());
+
+                switch (this.inputOptions.textAlign) {
+                    case 'left':
+                        this.selection.x = this.inputOptions.padding;
+                        break;
+                    case 'center':
+                        this.selection.x = this.inputOptions.padding + this.inputOptions.width / 2 - this.text.width / 2;
+                        break;
+                }
+            } else {
+                this.selection.clear();
+            }
+        }
+
+        /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
         private keyListener()
@@ -291,6 +367,7 @@ module Fabrique {
 
             this.updateText();
             this.updateCursor();
+            this.updateSelection();
         }
 
         /**

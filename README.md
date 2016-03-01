@@ -47,8 +47,6 @@ var password = game.add.inputField(10, 90, {
 
 Current Limitations
 -------------------
- - ctrl+a works, but isn't visible
- - Clicking in the box doesn't update the cursor position
  - Updates are slow when typing fast (type slower you!!)
 
 Properties
@@ -71,6 +69,7 @@ Properties
  - **font**: string (14px Arial by default) The font that is used for the input box, covers the input text, placeholder and cursor
  - **min**: string (none by default) The minimum number for the input field, only for number input fields
  - **max**: string (none by default) The maximum number for the number input field, or the maxLength for other input fields
+ - **selectionColor**: string (rgba(179, 212, 253, 0.8) by default) The default color for the text selection highlight.
 
 Browser Support
 ---------------
@@ -85,7 +84,7 @@ Tested on:
 
 Changelog
 ---------
-### 0.2.0
+### 1.0.0
 * Updated example
 * Added masking for texts so they don't overflow the box anymore
 * Combined max/maxLength
@@ -93,6 +92,7 @@ Changelog
 * Added option for aligning texts
 * Keyboard can now be used to update caret position
 * Clicking in the input field now changes the caret position
+* ctrl+a can be used to select text
 
 ### 0.1.4
 * You can now reset text

@@ -9,6 +9,7 @@
 
     <!-- Include Phaser Responsiveness JS -->
     <script type="text/javascript" src="../node_modules/phaser/build/phaser.js"></script>
+    <script type="text/javascript" src="../node_modules/phaser-nineslice/build/phaser-nineslice.js"></script>
     <script type="text/javascript" src="../build/phaser-input.js"></script>
 
     <style type="text/css">
@@ -25,19 +26,36 @@
 
     <!-- Game we want to track -->
     <script type="text/javascript">
-        var game = new Phaser.Game(200, 250, Phaser.AUTO, '', { create: create}, true);
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { create: create, preload: preload}, true);
         Phaser.Device.whenReady(function () {
             game.plugins.add(Fabrique.Plugins.InputField);
+            game.plugins.add(Fabrique.Plugins.NineSlice);
         });
 
-        function create(){
-            var login = game.add.text(30, 10, 'Log in to game', {
-                font: '18px Arial'
-            });
+        function preload() {
+            game.load.image('bg', 'images/bg.png');
+            game.load.nineSlice('input', 'images/inputfield.png', 15);
+            game.load.nineSlice('btn', 'images/btn_clean.png', 20, 23, 27, 28);
+        }
 
-            var user = game.add.inputField(10, 50, {
+        function create(){
+            //let's add a nice background
+            game.add.image(0, 0, 'bg');
+
+            //Oooe, there's a title here!
+            var login = game.add.text(game.width / 2, 100, 'Log in to this awesome game!', {
+                font: '30px Arial',
+                fill: '#ffffff'
+            });
+            login.anchor.set(0.5);
+
+            //Here's the input field for the user's name
+            var userBg = game.add.nineSlice(game.width / 2+ 5, 180, 'input', 200, 50);
+            userBg.anchor.set(0.5);
+            var user = game.add.inputField(game.width / 2 - 85, 180 - 17, {
                 font: '18px Arial',
                 fill: '#212121',
+                fillAlpha: 0,
                 fontWeight: 'bold',
                 width: 150,
                 max: 10,
@@ -49,9 +67,13 @@
                 textAlign: 'center'
             });
 
-            var password = game.add.inputField(10, 90, {
+            //We'd need a password too
+            var passBg = game.add.nineSlice(game.width / 2+ 5, 250, 'input', 200, 50);
+            passBg.anchor.set(0.5);
+            var password = game.add.inputField(game.width / 2 - 85, 250 - 17, {
                 font: '18px Arial',
                 fill: '#212121',
+                fillAlpha: 0,
                 fontWeight: 'bold',
                 width: 150,
                 padding: 8,
@@ -62,9 +84,13 @@
                 type: Fabrique.InputType.password
             });
 
-            var age = game.add.inputField(10, 130, {
+            //Let's not forget about age?!
+            var ageBg = game.add.nineSlice(game.width / 2 + 5, 320, 'input', 200, 50);
+            ageBg.anchor.set(0.5);
+            var age = game.add.inputField(game.width / 2 - 85, 320 - 17, {
                 font: '18px Arial',
                 fill: '#212121',
+                fillAlpha: 0,
                 fontWeight: 'bold',
                 width: 150,
                 padding: 8,
@@ -77,12 +103,13 @@
                 type: Fabrique.InputType.number
             });
 
-            var submit = game.add.text(20, 180, 'Submit', {
+            var submitBtn = game.add.nineSlice(game.width / 2 - 100, 360, 'btn', 100, 70);
+            var submit = game.add.text(game.width / 2 - 80, 380, 'Submit', {
                 font: '18px Arial'
             });
-            submit.inputEnabled = true;
-            submit.input.useHandCursor = true;
-            submit.events.onInputDown.add(function() {
+            submitBtn.inputEnabled = true;
+            submitBtn.input.useHandCursor = true;
+            submitBtn.events.onInputDown.add(function() {
                 game.add.text(30, 10, 'Welcome ' + user.value + '!', {
                     font: '18px Arial'
                 });
@@ -98,12 +125,13 @@
                 submit.destroy();
             });
 
-            var reset = game.add.text(120, 180, 'Reset', {
+            var resetBtn = game.add.nineSlice(game.width / 2 + 10, 360, 'btn', 100, 70);
+            var reset = game.add.text(game.width / 2 + 35, 380, 'Reset', {
                 font: '18px Arial'
             });
-            reset.inputEnabled = true;
-            reset.input.useHandCursor = true;
-            reset.events.onInputDown.add(function() {
+            resetBtn.inputEnabled = true;
+            resetBtn.input.useHandCursor = true;
+            resetBtn.events.onInputDown.add(function() {
                 user.resetText();
                 password.resetText();
                 age.resetText();

@@ -16,7 +16,11 @@ declare module Fabrique {
         setMax(max: string, min?: string): void;
         value: string;
         focus(): void;
+        hasSelection: boolean;
+        caretStart: number;
+        caretEnd: number;
         getCaretPosition(): number;
+        setCaretPosition(pos: number): void;
     }
 }
 declare module Fabrique {
@@ -37,6 +41,7 @@ declare module Fabrique {
         min?: string;
         max?: string;
         textAlign?: string;
+        selectionColor?: string;
     }
     class InputField extends Phaser.Sprite {
         private placeHolder;
@@ -49,6 +54,7 @@ declare module Fabrique {
         value: string;
         private inputOptions;
         private domElement;
+        private selection;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
         /**
          * This is a generic input down handler for the game.
@@ -72,6 +78,9 @@ declare module Fabrique {
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
         private endFocus();
+        /**
+         *
+         */
         private startFocus();
         /**
          * Update the text value in the box, and make sure the cursor is positioned correctly
@@ -87,6 +96,16 @@ declare module Fabrique {
          * @returns {number}
          */
         private getCaretPosition();
+        /**
+         * Set the caret when a click was made in the input field
+         *
+         * @param e
+         */
+        private setCaretOnclick(e);
+        /**
+         * This checks if a select has been made, and if so highlight it with blue
+         */
+        private updateSelection();
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
@@ -104,6 +123,19 @@ declare module Fabrique {
 declare module Fabrique {
     class InputBox extends Phaser.Graphics {
         constructor(game: Phaser.Game, inputOptions: InputOptions);
+    }
+}
+declare module Fabrique {
+    class SelectionHighlight extends Phaser.Graphics {
+        private inputOptions;
+        constructor(game: Phaser.Game, inputOptions: InputOptions);
+        updateSelection(rect: PIXI.Rectangle): void;
+        static rgb2hex(color: {
+            r: number;
+            g: number;
+            b: number;
+            a: number;
+        }): number;
     }
 }
 declare module Fabrique {

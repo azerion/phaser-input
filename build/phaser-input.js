@@ -1,3 +1,12 @@
+/*!
+ * phaser-input - version 1.0.0 
+ * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
+ *
+ * OrangeGames
+ * Build at 01-03-2016
+ * Released under MIT License 
+ */
+
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -59,11 +68,41 @@ var Fabrique;
         InputElement.prototype.focus = function () {
             this.element.focus();
         };
+        Object.defineProperty(InputElement.prototype, "hasSelection", {
+            get: function () {
+                if (this.type === InputType.number) {
+                    return false;
+                }
+                return this.element.selectionStart !== this.element.selectionEnd;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(InputElement.prototype, "caretStart", {
+            get: function () {
+                return this.element.selectionEnd;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(InputElement.prototype, "caretEnd", {
+            get: function () {
+                return this.element.selectionStart;
+            },
+            enumerable: true,
+            configurable: true
+        });
         InputElement.prototype.getCaretPosition = function () {
             if (this.type === InputType.number) {
                 return -1;
             }
             return this.element.selectionStart;
+        };
+        InputElement.prototype.setCaretPosition = function (pos) {
+            if (this.type === InputType.number) {
+                return;
+            }
+            this.element.setSelectionRange(pos, pos);
         };
         return InputElement;
     })();
@@ -100,7 +139,8 @@ var Fabrique;
             this.inputOptions.type = inputOptions.type || Fabrique.InputType.text;
             this.inputOptions.borderRadius = inputOptions.borderRadius || 0;
             this.inputOptions.height = inputOptions.height || 14;
-            this.inputOptions.fillAlpha = inputOptions.fillAlpha || 1;
+            this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
+            this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
             //create the input box
             this.box = new Fabrique.InputBox(this.game, inputOptions);
             this.setTexture(this.box.generateTexture());
@@ -110,6 +150,8 @@ var Fabrique;
             //Create the hidden dom elements
             this.domElement = new Fabrique.InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
+            this.selection = new Fabrique.SelectionHighlight(this.game, this.inputOptions);
+            this.addChild(this.selection);
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
                 this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, {
                     font: inputOptions.font || '14px Arial',
@@ -169,6 +211,10 @@ var Fabrique;
          */
         InputField.prototype.checkDown = function (e) {
             if (this.input.checkPointerOver(e)) {
+                if (this.focus) {
+                    this.setCaretOnclick(e);
+                    return;
+                }
                 this.focus = true;
                 if (null !== this.placeHolder) {
                     this.placeHolder.visible = false;
@@ -203,6 +249,9 @@ var Fabrique;
             }
             this.cursor.visible = false;
         };
+        /**
+         *
+         */
         InputField.prototype.startFocus = function () {
             var _this = this;
             this.domElement.addKeyUpListener(this.keyListener.bind(this));
@@ -302,12 +351,66 @@ var Fabrique;
             return this.offscreenText.width;
         };
         /**
+         * Set the caret when a click was made in the input field
+         *
+         * @param e
+         */
+        InputField.prototype.setCaretOnclick = function (e) {
+            var localX = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.stage)).x;
+            if (this.inputOptions.textAlign && this.inputOptions.textAlign === 'center') {
+                localX += this.text.width / 2;
+            }
+            var characterWidth = this.text.width / this.value.length;
+            var index = 0;
+            for (var i = 0; i < this.value.length; i++) {
+                if (localX >= i * characterWidth && localX <= (i + 1) * characterWidth) {
+                    index = i;
+                    break;
+                }
+            }
+            if (localX > (this.value.length - 1) * characterWidth) {
+                index = this.value.length;
+            }
+            this.startFocus();
+            this.domElement.setCaretPosition(index);
+            this.updateCursor();
+        };
+        /**
+         * This checks if a select has been made, and if so highlight it with blue
+         */
+        InputField.prototype.updateSelection = function () {
+            if (this.domElement.hasSelection) {
+                var text = this.value;
+                if (this.inputOptions.type === Fabrique.InputType.password) {
+                    text = '';
+                    for (var i = 0; i < this.value.length; i++) {
+                        text += '*';
+                    }
+                }
+                text = text.substring(this.domElement.caretStart, this.domElement.caretEnd);
+                this.offscreenText.setText(text);
+                this.selection.updateSelection(this.offscreenText.getBounds());
+                switch (this.inputOptions.textAlign) {
+                    case 'left':
+                        this.selection.x = this.inputOptions.padding;
+                        break;
+                    case 'center':
+                        this.selection.x = this.inputOptions.padding + this.inputOptions.width / 2 - this.text.width / 2;
+                        break;
+                }
+            }
+            else {
+                this.selection.clear();
+            }
+        };
+        /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
         InputField.prototype.keyListener = function () {
             this.value = this.domElement.value;
             this.updateText();
             this.updateCursor();
+            this.updateSelection();
         };
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
@@ -356,6 +459,29 @@ var Fabrique;
         return InputBox;
     })(Phaser.Graphics);
     Fabrique.InputBox = InputBox;
+})(Fabrique || (Fabrique = {}));
+var Fabrique;
+(function (Fabrique) {
+    var SelectionHighlight = (function (_super) {
+        __extends(SelectionHighlight, _super);
+        function SelectionHighlight(game, inputOptions) {
+            _super.call(this, game, inputOptions.padding, inputOptions.padding);
+            this.inputOptions = inputOptions;
+        }
+        SelectionHighlight.prototype.updateSelection = function (rect) {
+            var color = Phaser.Color.webToColor(this.inputOptions.selectionColor);
+            this.clear();
+            this.beginFill(SelectionHighlight.rgb2hex(color), color.a);
+            this.drawRect(rect.x, rect.y, rect.width, rect.height - this.inputOptions.padding);
+        };
+        SelectionHighlight.rgb2hex = function (color) {
+            return parseInt(("0" + color.r.toString(16)).slice(-2) +
+                ("0" + color.g.toString(16)).slice(-2) +
+                ("0" + color.b.toString(16)).slice(-2), 16);
+        };
+        return SelectionHighlight;
+    })(Phaser.Graphics);
+    Fabrique.SelectionHighlight = SelectionHighlight;
 })(Fabrique || (Fabrique = {}));
 var Fabrique;
 (function (Fabrique) {
