@@ -1,12 +1,3 @@
-/*!
- * phaser-input - version 1.0.0 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
- *
- * OrangeGames
- * Build at 01-03-2016
- * Released under MIT License 
- */
-
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -16,11 +7,15 @@ var Fabrique;
     })(Fabrique.InputType || (Fabrique.InputType = {}));
     var InputType = Fabrique.InputType;
     var InputElement = (function () {
-        function InputElement(id, type, value) {
+        function InputElement(game, id, type, value) {
+            var _this = this;
             if (type === void 0) { type = InputType.text; }
             if (value === void 0) { value = ''; }
+            this.focusIn = new Phaser.Signal();
+            this.focusOut = new Phaser.Signal();
             this.id = id;
             this.type = type;
+            this.game = game;
             this.element = document.createElement('input');
             this.element.id = id;
             this.element.style.position = 'absolute';
@@ -28,6 +23,12 @@ var Fabrique;
             this.element.style.left = (-100).toString() + 'px';
             this.element.value = this.value;
             this.element.type = InputType[type];
+            this.element.addEventListener('focusin', function () {
+                _this.focusIn.dispatch();
+            });
+            this.element.addEventListener('focusout', function () {
+                _this.focusOut.dispatch();
+            });
             document.body.appendChild(this.element);
         }
         InputElement.prototype.addKeyUpListener = function (callback) {
@@ -66,7 +67,26 @@ var Fabrique;
             configurable: true
         });
         InputElement.prototype.focus = function () {
+            var _this = this;
             this.element.focus();
+            console.log('focussing');
+            if (!this.game.device.desktop && this.game.device.chrome) {
+                var originalWidth = window.innerWidth, originalHeight = window.innerHeight;
+                var kbAppeared = false;
+                var interval = setInterval(function () {
+                    console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight);
+                    if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
+                        kbAppeared = true;
+                    }
+                    if (kbAppeared && originalWidth === window.innerWidth && originalHeight === window.innerHeight) {
+                        _this.focusOut.dispatch();
+                        clearInterval(interval);
+                    }
+                }, 50);
+            }
+        };
+        InputElement.prototype.blur = function () {
+            this.element.blur();
         };
         Object.defineProperty(InputElement.prototype, "hasSelection", {
             get: function () {
@@ -118,6 +138,7 @@ var Fabrique;
     var InputField = (function (_super) {
         __extends(InputField, _super);
         function InputField(game, x, y, inputOptions) {
+            var _this = this;
             if (inputOptions === void 0) { inputOptions = {}; }
             _super.call(this, game, x, y);
             this.placeHolder = null;
@@ -141,6 +162,7 @@ var Fabrique;
             this.inputOptions.height = inputOptions.height || 14;
             this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
             this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
+            this.inputOptions.zoom = (!game.device.desktop) ? inputOptions.zoom || false : false;
             //create the input box
             this.box = new Fabrique.InputBox(this.game, inputOptions);
             this.setTexture(this.box.generateTexture());
@@ -148,7 +170,7 @@ var Fabrique;
             this.textMask = new Fabrique.TextMask(this.game, inputOptions);
             this.addChild(this.textMask);
             //Create the hidden dom elements
-            this.domElement = new Fabrique.InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
+            this.domElement = new Fabrique.InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
             this.selection = new Fabrique.SelectionHighlight(this.game, this.inputOptions);
             this.addChild(this.selection);
@@ -199,6 +221,14 @@ var Fabrique;
             this.inputEnabled = true;
             this.input.useHandCursor = true;
             this.game.input.onDown.add(this.checkDown, this);
+            this.domElement.focusOut.add(function () {
+                if (Fabrique.Plugins.InputField.KeyboardOpen) {
+                    _this.endFocus();
+                    if (_this.inputOptions.zoom) {
+                        _this.zoomOut();
+                    }
+                }
+            });
         }
         /**
          * This is a generic input down handler for the game.
@@ -220,10 +250,16 @@ var Fabrique;
                     this.placeHolder.visible = false;
                 }
                 this.startFocus();
+                if (this.inputOptions.zoom) {
+                    this.zoomIn();
+                }
             }
             else {
                 if (this.focus === true) {
                     this.endFocus();
+                    if (this.inputOptions.zoom) {
+                        this.zoomOut();
+                    }
                 }
             }
         };
@@ -242,12 +278,25 @@ var Fabrique;
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
         InputField.prototype.endFocus = function () {
+            var _this = this;
             this.domElement.removeEventListener();
             this.focus = false;
             if (this.value.length === 0 && null !== this.placeHolder) {
                 this.placeHolder.visible = true;
             }
             this.cursor.visible = false;
+            if (this.game.device.desktop) {
+                //Timeout is a chrome hack
+                setTimeout(function () {
+                    _this.domElement.blur();
+                }, 0);
+            }
+            else {
+                this.domElement.blur();
+            }
+            if (!this.game.device.desktop) {
+                Fabrique.Plugins.InputField.KeyboardOpen = false;
+            }
         };
         /**
          *
@@ -263,6 +312,9 @@ var Fabrique;
             }
             else {
                 this.domElement.focus();
+            }
+            if (!this.game.device.desktop) {
+                Fabrique.Plugins.InputField.KeyboardOpen = true;
             }
         };
         /**
@@ -403,11 +455,39 @@ var Fabrique;
                 this.selection.clear();
             }
         };
+        InputField.prototype.zoomIn = function () {
+            if (Fabrique.Plugins.InputField.Zoomed) {
+                return;
+            }
+            var windowScale;
+            if (window.innerHeight > window.innerWidth) {
+                windowScale = this.game.width / (this.width * 1.5);
+            }
+            else {
+                windowScale = (this.game.width / 2) / (this.width * 1.5);
+            }
+            var offsetX = ((this.game.width - this.width * 1.5) / 2) / windowScale;
+            this.game.world.scale.set(windowScale);
+            this.game.world.pivot.set(this.x - offsetX, this.y - this.inputOptions.padding * 2);
+            Fabrique.Plugins.InputField.Zoomed = true;
+        };
+        InputField.prototype.zoomOut = function () {
+            if (!Fabrique.Plugins.InputField.Zoomed) {
+                return;
+            }
+            this.game.world.scale.set(1);
+            this.game.world.pivot.set(0, 0);
+            Fabrique.Plugins.InputField.Zoomed = false;
+        };
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
-        InputField.prototype.keyListener = function () {
+        InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
+            if (evt.keyCode === 13) {
+                this.endFocus();
+                return;
+            }
             this.updateText();
             this.updateCursor();
             this.updateSelection();
@@ -533,6 +613,8 @@ var Fabrique;
                     return new Fabrique.InputField(this.game, x, y, inputOptions);
                 };
             };
+            InputField.Zoomed = false;
+            InputField.KeyboardOpen = false;
             return InputField;
         })(Phaser.Plugin);
         Plugins.InputField = InputField;

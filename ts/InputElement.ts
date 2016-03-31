@@ -15,9 +15,16 @@ module Fabrique {
 
         private id: string;
 
-        constructor(id: string, type: InputType = InputType.text, value: string = '') {
+        private game: Phaser.Game;
+
+        public focusIn: Phaser.Signal = new Phaser.Signal();
+
+        public focusOut: Phaser.Signal = new Phaser.Signal();
+
+        constructor(game: Phaser.Game, id: string, type: InputType = InputType.text, value: string = '') {
             this.id = id;
             this.type = type;
+            this.game = game;
 
             this.element = document.createElement('input');
 
@@ -27,6 +34,14 @@ module Fabrique {
             this.element.style.left = (-100).toString() + 'px';
             this.element.value = this.value;
             this.element.type = InputType[type];
+
+
+            this.element.addEventListener('focusin', (): void => {
+                this.focusIn.dispatch();
+            });
+            this.element.addEventListener('focusout', (): void => {
+                this.focusOut.dispatch()
+            });
 
             document.body.appendChild(this.element);
         }
@@ -71,6 +86,28 @@ module Fabrique {
 
         public focus(): void {
             this.element.focus();
+            console.log('focussing');
+            if (!this.game.device.desktop && this.game.device.chrome) {
+                let originalWidth = window.innerWidth,
+                    originalHeight = window.innerHeight;
+
+                let kbAppeared: boolean = false;
+                let interval: number = setInterval((): void => {
+                    console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight)
+                    if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
+                        kbAppeared = true;
+                    }
+
+                    if (kbAppeared && originalWidth === window.innerWidth && originalHeight === window.innerHeight) {
+                        this.focusOut.dispatch();
+                        clearInterval(interval);
+                    }
+                }, 50);
+            }
+        }
+
+        public blur(): void {
+            this.element.blur();
         }
 
         get hasSelection () {

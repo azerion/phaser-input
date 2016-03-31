@@ -39,6 +39,10 @@
         }
 
         function create(){
+            if (!game.device.desktop) {
+                game.scale.setGameSize(window.innerWidth, window.innerHeight);
+            }
+
             //let's add a nice background
             game.add.image(0, 0, 'bg');
 
@@ -64,7 +68,8 @@
                 borderColor: '#000',
                 borderRadius: 6,
                 placeHolder: 'Username',
-                textAlign: 'center'
+                textAlign: 'center',
+                zoom: true
             });
 
             //We'd need a password too
@@ -81,7 +86,8 @@
                 borderColor: '#000',
                 borderRadius: 6,
                 placeHolder: 'Password',
-                type: Fabrique.InputType.password
+                type: Fabrique.InputType.password,
+                zoom: true
             });
 
             //Let's not forget about age?!
@@ -100,7 +106,8 @@
                 min: '18',
                 max: '99',
                 placeHolder: 'Your age',
-                type: Fabrique.InputType.number
+                type: Fabrique.InputType.number,
+                zoom: true
             });
 
             var submitBtn = game.add.nineSlice(game.width / 2 - 100, 360, 'btn', 100, 70);

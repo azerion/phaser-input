@@ -18,6 +18,7 @@ module Fabrique {
         max?: string;
         textAlign?: string;
         selectionColor?: string;
+        zoom?: boolean;
     }
 
     export class InputField extends Phaser.Sprite {
@@ -56,6 +57,7 @@ module Fabrique {
             this.inputOptions.height = inputOptions.height || 14;
             this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
             this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
+            this.inputOptions.zoom = (!game.device.desktop) ? inputOptions.zoom || false : false;
 
             //create the input box
             this.box = new InputBox(this.game, inputOptions);
@@ -66,7 +68,7 @@ module Fabrique {
             this.addChild(this.textMask);
 
             //Create the hidden dom elements
-            this.domElement = new InputElement('phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
+            this.domElement = new InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
 
             this.selection = new SelectionHighlight(this.game, this.inputOptions);
@@ -125,6 +127,14 @@ module Fabrique {
             this.input.useHandCursor = true;
 
             this.game.input.onDown.add(this.checkDown, this);
+            this.domElement.focusOut.add((): void => {
+                if (Plugins.InputField.KeyboardOpen) {
+                    this.endFocus();
+                    if (this.inputOptions.zoom) {
+                        this.zoomOut();
+                    }
+                }
+            })
         }
 
         /**
@@ -150,9 +160,15 @@ module Fabrique {
                 }
 
                 this.startFocus();
+                if (this.inputOptions.zoom) {
+                    this.zoomIn();
+                }
             } else {
                 if (this.focus === true) {
-                    this.endFocus()
+                    this.endFocus();
+                    if (this.inputOptions.zoom) {
+                        this.zoomOut();
+                    }
                 }
             }
         }
@@ -190,6 +206,19 @@ module Fabrique {
                 this.placeHolder.visible = true;
             }
             this.cursor.visible = false;
+
+            if (this.game.device.desktop) {
+                //Timeout is a chrome hack
+                setTimeout(() => {
+                    this.domElement.blur();
+                }, 0);
+            } else {
+                this.domElement.blur();
+            }
+
+            if (!this.game.device.desktop) {
+                Plugins.InputField.KeyboardOpen = false;
+            }
         }
 
         /**
@@ -207,6 +236,9 @@ module Fabrique {
                 this.domElement.focus();
             }
 
+            if (!this.game.device.desktop) {
+                Plugins.InputField.KeyboardOpen = true;
+            }
         }
 
         /**
@@ -357,13 +389,46 @@ module Fabrique {
                 this.selection.clear();
             }
         }
+        
+        private zoomIn(): void {
+            if (Plugins.InputField.Zoomed) {
+                return;
+            }
+
+            let windowScale: number;
+            if (window.innerHeight > window.innerWidth) {
+                windowScale = this.game.width / (this.width * 1.5);
+            } else {
+                windowScale = (this.game.width / 2) / (this.width * 1.5);
+            }
+
+            let offsetX: number = ((this.game.width - this.width * 1.5) / 2) / windowScale;
+            this.game.world.scale.set(windowScale);
+            this.game.world.pivot.set(this.x - offsetX, this.y - this.inputOptions.padding * 2);
+            Plugins.InputField.Zoomed = true;
+        }
+
+        private zoomOut(): void {
+            if (!Plugins.InputField.Zoomed) {
+                return;
+            }
+
+            this.game.world.scale.set(1);
+            this.game.world.pivot.set(0, 0);
+            Plugins.InputField.Zoomed = false;
+        }
 
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
-        private keyListener()
+        private keyListener(evt: KeyboardEvent)
         {
             this.value = this.domElement.value;
+
+            if (evt.keyCode === 13) {
+                this.endFocus();
+                return;
+            }
 
             this.updateText();
             this.updateCursor();

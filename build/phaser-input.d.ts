@@ -9,13 +9,17 @@ declare module Fabrique {
         private callback;
         private type;
         private id;
-        constructor(id: string, type?: InputType, value?: string);
+        private game;
+        focusIn: Phaser.Signal;
+        focusOut: Phaser.Signal;
+        constructor(game: Phaser.Game, id: string, type?: InputType, value?: string);
         addKeyUpListener(callback: () => void): void;
         removeEventListener(): void;
         destroy(): void;
         setMax(max: string, min?: string): void;
         value: string;
         focus(): void;
+        blur(): void;
         hasSelection: boolean;
         caretStart: number;
         caretEnd: number;
@@ -42,6 +46,7 @@ declare module Fabrique {
         max?: string;
         textAlign?: string;
         selectionColor?: string;
+        zoom?: boolean;
     }
     class InputField extends Phaser.Sprite {
         private placeHolder;
@@ -106,10 +111,12 @@ declare module Fabrique {
          * This checks if a select has been made, and if so highlight it with blue
          */
         private updateSelection();
+        private zoomIn();
+        private zoomOut();
         /**
          * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
          */
-        private keyListener();
+        private keyListener(evt);
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
          */
@@ -156,6 +163,8 @@ declare module Fabrique {
             make: InputFieldObjectCreator;
         }
         class InputField extends Phaser.Plugin {
+            static Zoomed: boolean;
+            static KeyboardOpen: boolean;
             constructor(game: Phaser.Game, parent: PIXI.DisplayObject);
             /**
              * Extends the GameObjectFactory prototype with the support of adding InputField. this allows us to add InputField methods to the game just like any other object:

@@ -3,6 +3,15 @@ Phaser Input
 
 Some description here about how awesome this Phaser Input library is, because it works on Canvas AND WebGL. Oh did I mention mobile to? no? Well it supports mobile..
 
+Key features:
+
+* Works on mobile and Desktop
+* Included TypeScript support
+* Also runs under WebGL renderer
+* Pure Phaser implementation
+* Easy configurable
+* Production hardened
+
 
 Getting Started
 ---------------
@@ -21,8 +30,9 @@ After adding the script to the page you can activate it by enabling the plugin:
 game.add.plugin(Fabrique.Plugins.Input);
 ```
 
-Adding a InputField
--------------------
+Usage
+-----
+### Adding a InputField
 The simpelest way of adding a input field is:
 ```javascript
 var input = game.add.inputField(10, 90);
@@ -44,13 +54,21 @@ var password = game.add.inputField(10, 90, {
     type: Fabrique.InputType.password
 });
 ```
+### Using zoom
+Zooming is easy to enable on an input field, it can be passed to the InputField as a setting. But there are some caveats:
 
-Current Limitations
--------------------
+First of all, it's only meant for mobile. Second; it modifies the scale and pivot of the world, and that might interfere with your resize.
+
+Also, when the keyboard is shown, sometimes a resize event will be triggered.
+
+Ideally you use a custom resize event, check for the static property `Fabrique.Plugins.InputField.KeyboardOpen` and don't resize when it's set to true.
+
+
+### Current Limitations
  - Updates are slow when typing fast (type slower you!!)
+ - Zoom modifies the pivot and scal eof the world, so it might interfere with some stuff
 
-Properties
-----------
+## Properties
  - **x**: number (0 by default) The X-coordinate in the game
  - **y**: number (0 by default) The Y-coordinate in the game
  - **fill**: string (#fff by default) The color of the inputted text
@@ -70,9 +88,9 @@ Properties
  - **min**: string (none by default) The minimum number for the input field, only for number input fields
  - **max**: string (none by default) The maximum number for the number input field, or the maxLength for other input fields
  - **selectionColor**: string (rgba(179, 212, 253, 0.8) by default) The default color for the text selection highlight.
+ - **zoom**: boolean (false by default) if we need to  zoom onto the input field (mobile only).
 
-Browser Support
----------------
+### Browser Support
 Tested on:
  - Desktop
   * Chrome 48+
@@ -82,40 +100,13 @@ Tested on:
   * Chrome 48+
   * iOS 9+
 
-Changelog
----------
-### 1.0.0
-* Updated example
-* Added masking for texts so they don't overflow the box anymore
-* Combined max/maxLength
-* Moved dom manipulation to seperate class
-* Added option for aligning texts
-* Keyboard can now be used to update caret position
-* Clicking in the input field now changes the caret position
-* ctrl+a can be used to select text
-
-### 0.1.4
-* You can now reset text
-* Only nummeric input now also possible as type
-* You can now specify a max length (text/password) or min/max (number)
-
-### 0.1.3
-* Fixed an issue where input wouldn't appear on Desktop Firefox and Safari
-
-### 0.1.2
-* Fixed a small issue when no placeHolder was set
-
-### 0.1.1
-* Fixed sprite texture glitch in WebGL renderers
-* Appended properties with the inherited Phaser.PhaserTextStyle properties that are used
-* added the possibility to change the cursor color
-* made the options parameter optional
-
-### 0.1.0
-* Full Android/iOS support
+Credits
+-------
+phaser-input is inspired by [CanvasInput](https://github.com/goldfire/CanvasInput)
 
 Disclaimer
 ----------
 We at OrangeGames just love playing and creating awesome games. We aren't affiliated with Phaser.io. We just needed some awesome input boxes in our awesome HTML5 games. Feel free to use it for enhancing your own awesome games!
 
-Released under the MIT license
+Phaser Input is distributed under the MIT license. All 3rd party libraries and components are distributed under their
+respective license terms.

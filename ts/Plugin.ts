@@ -14,6 +14,9 @@ module Fabrique {
         }
 
         export class InputField extends Phaser.Plugin {
+            public static Zoomed: boolean = false;
+            public static KeyboardOpen: boolean = false;
+
             constructor(game:Phaser.Game, parent:PIXI.DisplayObject) {
                 super(game, parent);
 
