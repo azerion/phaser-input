@@ -27,13 +27,13 @@ Next up you'd want to add it to your list of js sources you load into your game
 
 After adding the script to the page you can activate it by enabling the plugin:
 ```javascript
-game.add.plugin(Fabrique.Plugins.Input);
+game.add.plugin(Fabrique.Plugins.InputField);
 ```
 
 Usage
 -----
 ### Adding a InputField
-The simpelest way of adding a input field is:
+The simplest way of adding a input field is:
 ```javascript
 var input = game.add.inputField(10, 90);
 ```
@@ -66,7 +66,7 @@ Ideally you use a custom resize event, check for the static property `Fabrique.P
 
 ### Current Limitations
  - Updates are slow when typing fast (type slower you!!)
- - Zoom modifies the pivot and scal eof the world, so it might interfere with some stuff
+ - Zoom modifies the pivot and scale of the world, so it might interfere with some stuff
 
 ## Properties
  - **x**: number (0 by default) The X-coordinate in the game
