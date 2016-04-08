@@ -1,12 +1,3 @@
-/*!
- * phaser-input - version 1.1.1 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
- *
- * OrangeGames
- * Build at 04-04-2016
- * Released under MIT License 
- */
-
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -78,7 +69,6 @@ var Fabrique;
         InputElement.prototype.focus = function () {
             var _this = this;
             this.element.focus();
-            console.log('focussing');
             if (!this.game.device.desktop && this.game.device.chrome) {
                 var originalWidth = window.innerWidth, originalHeight = window.innerHeight;
                 var kbAppeared = false;
@@ -154,6 +144,7 @@ var Fabrique;
             this.box = null;
             this.focus = false;
             this.value = '';
+            this.windowScale = 1;
             /**
              * Update function makes the cursor blink, it uses two private properties to make it toggle
              *
@@ -254,14 +245,13 @@ var Fabrique;
                     this.setCaretOnclick(e);
                     return;
                 }
-                this.focus = true;
                 if (null !== this.placeHolder) {
                     this.placeHolder.visible = false;
                 }
-                this.startFocus();
-                if (this.inputOptions.zoom) {
+                if (this.inputOptions.zoom && !Fabrique.Plugins.InputField.Zoomed) {
                     this.zoomIn();
                 }
+                this.startFocus();
             }
             else {
                 if (this.focus === true) {
@@ -312,6 +302,7 @@ var Fabrique;
          */
         InputField.prototype.startFocus = function () {
             var _this = this;
+            this.focus = true;
             this.domElement.addKeyUpListener(this.keyListener.bind(this));
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
@@ -417,7 +408,7 @@ var Fabrique;
          * @param e
          */
         InputField.prototype.setCaretOnclick = function (e) {
-            var localX = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.stage)).x;
+            var localX = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.world)).x;
             if (this.inputOptions.textAlign && this.inputOptions.textAlign === 'center') {
                 localX += this.text.width / 2;
             }
@@ -468,23 +459,23 @@ var Fabrique;
             if (Fabrique.Plugins.InputField.Zoomed) {
                 return;
             }
-            var windowScale;
+            var bounds = this.getBounds();
             if (window.innerHeight > window.innerWidth) {
-                windowScale = this.game.width / (this.width * 1.5);
+                this.windowScale = this.game.width / (bounds.width * 1.5);
             }
             else {
-                windowScale = (this.game.width / 2) / (this.width * 1.5);
+                this.windowScale = (this.game.width / 2) / (bounds.width * 1.5);
             }
-            var offsetX = ((this.game.width - this.width * 1.5) / 2) / windowScale;
-            this.game.world.scale.set(windowScale);
-            this.game.world.pivot.set(this.x - offsetX, this.y - this.inputOptions.padding * 2);
+            var offsetX = ((this.game.width - bounds.width * 1.5) / 2) / this.windowScale;
+            this.game.world.scale.set(this.game.world.scale.x * this.windowScale, this.game.world.scale.y * this.windowScale);
+            this.game.world.pivot.set(bounds.x - offsetX, bounds.y - this.inputOptions.padding * 2);
             Fabrique.Plugins.InputField.Zoomed = true;
         };
         InputField.prototype.zoomOut = function () {
             if (!Fabrique.Plugins.InputField.Zoomed) {
                 return;
             }
-            this.game.world.scale.set(1);
+            this.game.world.scale.set(this.game.world.scale.x / this.windowScale, this.game.world.scale.y / this.windowScale);
             this.game.world.pivot.set(0, 0);
             Fabrique.Plugins.InputField.Zoomed = false;
         };

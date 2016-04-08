@@ -86,7 +86,6 @@ module Fabrique {
 
         public focus(): void {
             this.element.focus();
-            console.log('focussing');
             if (!this.game.device.desktop && this.game.device.chrome) {
                 let originalWidth = window.innerWidth,
                     originalHeight = window.innerHeight;

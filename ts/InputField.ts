@@ -44,6 +44,8 @@ module Fabrique {
 
         private selection: SelectionHighlight;
 
+        private windowScale: number = 1;
+
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
@@ -154,15 +156,14 @@ module Fabrique {
                     return;
                 }
 
-                this.focus = true;
                 if (null !== this.placeHolder) {
                     this.placeHolder.visible = false;
                 }
 
-                this.startFocus();
-                if (this.inputOptions.zoom) {
+                if (this.inputOptions.zoom && !Fabrique.Plugins.InputField.Zoomed) {
                     this.zoomIn();
                 }
+                this.startFocus();
             } else {
                 if (this.focus === true) {
                     this.endFocus();
@@ -225,8 +226,8 @@ module Fabrique {
          *
          */
         private startFocus() {
+            this.focus = true;
             this.domElement.addKeyUpListener(this.keyListener.bind(this));
-
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(() => {
@@ -335,7 +336,7 @@ module Fabrique {
          * @param e
          */
         private setCaretOnclick(e: Phaser.Pointer) {
-            var localX: number = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.stage)).x;
+            var localX: number = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.world)).x;
             if (this.inputOptions.textAlign && this.inputOptions.textAlign === 'center') {
                 localX += this.text.width / 2;
             }
@@ -395,16 +396,16 @@ module Fabrique {
                 return;
             }
 
-            let windowScale: number;
+            let bounds: PIXI.Rectangle = this.getBounds();
             if (window.innerHeight > window.innerWidth) {
-                windowScale = this.game.width / (this.width * 1.5);
+                this.windowScale = this.game.width / (bounds.width * 1.5);
             } else {
-                windowScale = (this.game.width / 2) / (this.width * 1.5);
+                this.windowScale = (this.game.width / 2) / (bounds.width * 1.5);
             }
 
-            let offsetX: number = ((this.game.width - this.width * 1.5) / 2) / windowScale;
-            this.game.world.scale.set(windowScale);
-            this.game.world.pivot.set(this.x - offsetX, this.y - this.inputOptions.padding * 2);
+            let offsetX: number = ((this.game.width - bounds.width * 1.5) / 2) / this.windowScale;
+            this.game.world.scale.set(this.game.world.scale.x * this.windowScale, this.game.world.scale.y * this.windowScale);
+            this.game.world.pivot.set(bounds.x - offsetX, bounds.y - this.inputOptions.padding * 2);
             Plugins.InputField.Zoomed = true;
         }
 
@@ -413,7 +414,7 @@ module Fabrique {
                 return;
             }
 
-            this.game.world.scale.set(1);
+            this.game.world.scale.set(this.game.world.scale.x / this.windowScale, this.game.world.scale.y / this.windowScale);
             this.game.world.pivot.set(0, 0);
             Plugins.InputField.Zoomed = false;
         }

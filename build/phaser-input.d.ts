@@ -60,6 +60,7 @@ declare module Fabrique {
         private inputOptions;
         private domElement;
         private selection;
+        private windowScale;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
         /**
          * This is a generic input down handler for the game.
