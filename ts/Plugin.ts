@@ -16,6 +16,8 @@ module Fabrique {
         export class InputField extends Phaser.Plugin {
             public static Zoomed: boolean = false;
             public static KeyboardOpen: boolean = false;
+            public static onKeyboardOpen: Phaser.Signal = new Phaser.Signal();
+            public static onKeyboardClose: Phaser.Signal = new Phaser.Signal();
 
             constructor(game:Phaser.Game, parent:PIXI.DisplayObject) {
                 super(game, parent);

@@ -63,6 +63,16 @@ Also, when the keyboard is shown, sometimes a resize event will be triggered.
 
 Ideally you use a custom resize event, check for the static property `Fabrique.Plugins.InputField.KeyboardOpen` and don't resize when it's set to true.
 
+### Using keyboard open/close signals
+Current version includes two event dispatchers that notify when a device keyboard is opened or closed.
+
+You can add listeners which trigger events based on this feedback.
+
+```javascript
+Fabrique.Plugins.InputField.onKeyboardClose.addOnce(function() {
+                    this.resizeBackgroundImage();
+                });
+```
 
 ### Current Limitations
  - Updates are slow when typing fast (type slower you!!)

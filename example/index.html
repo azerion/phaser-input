@@ -143,6 +143,14 @@
                 password.resetText();
                 age.resetText();
             });
+
+            Fabrique.Plugins.InputField.onKeyboardOpen.add(function () {
+                console.error("keyboard open", Fabrique.Plugins.InputField.KeyboardOpen)
+            });
+            Fabrique.Plugins.InputField.onKeyboardClose.add(function () {
+                console.error("keyboard close", Fabrique.Plugins.InputField.KeyboardOpen)
+            });
+
         }
     </script>
 </head>

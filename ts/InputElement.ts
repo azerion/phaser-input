@@ -92,7 +92,7 @@ module Fabrique {
 
                 let kbAppeared: boolean = false;
                 let interval: number = setInterval((): void => {
-                    console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight)
+                    //console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight)
                     if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
                         kbAppeared = true;
                     }

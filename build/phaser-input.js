@@ -1,12 +1,3 @@
-/*!
- * phaser-input - version 1.1.2 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
- *
- * OrangeGames
- * Build at 08-04-2016
- * Released under MIT License 
- */
-
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -82,7 +73,7 @@ var Fabrique;
                 var originalWidth = window.innerWidth, originalHeight = window.innerHeight;
                 var kbAppeared = false;
                 var interval = setInterval(function () {
-                    console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight);
+                    //console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight)
                     if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
                         kbAppeared = true;
                     }
@@ -304,6 +295,7 @@ var Fabrique;
             }
             if (!this.game.device.desktop) {
                 Fabrique.Plugins.InputField.KeyboardOpen = false;
+                Fabrique.Plugins.InputField.onKeyboardClose.dispatch();
             }
         };
         /**
@@ -324,6 +316,7 @@ var Fabrique;
             }
             if (!this.game.device.desktop) {
                 Fabrique.Plugins.InputField.KeyboardOpen = true;
+                Fabrique.Plugins.InputField.onKeyboardOpen.dispatch();
             }
         };
         /**
@@ -624,6 +617,8 @@ var Fabrique;
             };
             InputField.Zoomed = false;
             InputField.KeyboardOpen = false;
+            InputField.onKeyboardOpen = new Phaser.Signal();
+            InputField.onKeyboardClose = new Phaser.Signal();
             return InputField;
         })(Phaser.Plugin);
         Plugins.InputField = InputField;

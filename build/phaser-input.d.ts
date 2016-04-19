@@ -166,6 +166,8 @@ declare module Fabrique {
         class InputField extends Phaser.Plugin {
             static Zoomed: boolean;
             static KeyboardOpen: boolean;
+            static onKeyboardOpen: Phaser.Signal;
+            static onKeyboardClose: Phaser.Signal;
             constructor(game: Phaser.Game, parent: PIXI.DisplayObject);
             /**
              * Extends the GameObjectFactory prototype with the support of adding InputField. this allows us to add InputField methods to the game just like any other object:

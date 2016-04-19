@@ -130,13 +130,15 @@ module Fabrique {
 
             this.game.input.onDown.add(this.checkDown, this);
             this.domElement.focusOut.add((): void => {
+
                 if (Plugins.InputField.KeyboardOpen) {
+
                     this.endFocus();
                     if (this.inputOptions.zoom) {
                         this.zoomOut();
                     }
                 }
-            })
+            });
         }
 
         /**
@@ -219,6 +221,7 @@ module Fabrique {
 
             if (!this.game.device.desktop) {
                 Plugins.InputField.KeyboardOpen = false;
+                Plugins.InputField.onKeyboardClose.dispatch();
             }
         }
 
@@ -239,6 +242,7 @@ module Fabrique {
 
             if (!this.game.device.desktop) {
                 Plugins.InputField.KeyboardOpen = true;
+                Plugins.InputField.onKeyboardOpen.dispatch();
             }
         }
 
