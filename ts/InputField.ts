@@ -453,7 +453,17 @@ module Fabrique {
          * Resets the text to an empty value
          */
         public resetText() {
-            this.value = "";
+            this.setText();
+        }
+
+        public setText(text: string = ''): void {
+            if  (text.length > 0) {
+                this.placeHolder.visible = false;
+            } else {
+                this.placeHolder.visible = true;
+            }
+
+            this.value = text;
             this.domElement.value = this.value;
             this.updateText();
             this.updateCursor();

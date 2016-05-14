@@ -1,3 +1,12 @@
+/*!
+ * phaser-input - version 1.1.4 
+ * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
+ *
+ * OrangeGames
+ * Build at 14-05-2016
+ * Released under MIT License 
+ */
+
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -505,7 +514,17 @@ var Fabrique;
          * Resets the text to an empty value
          */
         InputField.prototype.resetText = function () {
-            this.value = "";
+            this.setText();
+        };
+        InputField.prototype.setText = function (text) {
+            if (text === void 0) { text = ''; }
+            if (text.length > 0) {
+                this.placeHolder.visible = false;
+            }
+            else {
+                this.placeHolder.visible = true;
+            }
+            this.value = text;
             this.domElement.value = this.value;
             this.updateText();
             this.updateCursor();

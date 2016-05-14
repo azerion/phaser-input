@@ -126,6 +126,7 @@ declare module Fabrique {
          * Resets the text to an empty value
          */
         resetText(): void;
+        setText(text?: string): void;
     }
 }
 declare module Fabrique {
