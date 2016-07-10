@@ -1,10 +1,10 @@
 /*!
- * phaser-input - version 1.1.4 
+ * phaser-input - version 1.1.4
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
  * Build at 14-05-2016
- * Released under MIT License 
+ * Released under MIT License
  */
 
 var Fabrique;
@@ -341,10 +341,10 @@ var Fabrique;
             else if (this.inputOptions.type === Fabrique.InputType.number) {
                 var val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
-                    text = this.inputOptions.min;
+                    text = this.value = this.domElement.value = this.inputOptions.min;
                 }
                 else if (val > parseInt(this.inputOptions.max)) {
-                    text = this.inputOptions.max;
+                    text = this.value = this.domElement.value =this.inputOptions.max;
                 }
                 else {
                     text = this.value;
