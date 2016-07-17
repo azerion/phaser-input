@@ -13,7 +13,7 @@ module Fabrique {
             make: InputFieldObjectCreator;
         }
 
-        export class InputField extends Phaser.Plugin {
+        export class InputField extends Phaser.Plugin {            
             public static Zoomed: boolean = false;
             public static KeyboardOpen: boolean = false;
             public static onKeyboardOpen: Phaser.Signal = new Phaser.Signal();

@@ -51,6 +51,18 @@ module Fabrique {
             document.addEventListener('keyup', this.callback);
         }
 
+        public blockKeyDownEvents(): void {
+            document.addEventListener('keydown', this.preventKeyPropagration);
+        }
+
+        private preventKeyPropagration(evt: KeyboardEvent): void{
+            evt.stopPropagation();
+        }
+
+        public unblockKeyDownEvents(): void {
+            document.removeEventListener('keydown', this.preventKeyPropagration);
+        }
+
         public removeEventListener(): void {
             document.removeEventListener('keyup', this.callback);
         }

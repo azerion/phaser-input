@@ -22,6 +22,10 @@ module Fabrique {
     }
 
     export class InputField extends Phaser.Sprite {
+        public toggleFocusOnEnter: boolean = true;
+
+        public hasFocus: boolean = false;
+
         private placeHolder:Phaser.Text = null;
 
         private box:Phaser.Graphics = null;
@@ -45,7 +49,6 @@ module Fabrique {
         private selection: SelectionHighlight;
 
         private windowScale: number = 1;
-
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
@@ -201,9 +204,10 @@ module Fabrique {
         /**
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
-        private endFocus() {
+        private endFocus() {            
             this.domElement.removeEventListener();
-
+            this.domElement.unblockKeyDownEvents();
+            
             this.focus = false;
             if (this.value.length === 0 && null !== this.placeHolder) {
                 this.placeHolder.visible = true;
@@ -229,15 +233,18 @@ module Fabrique {
          *
          */
         private startFocus() {
-            this.focus = true;
+            this.focus = true;            
             this.domElement.addKeyUpListener(this.keyListener.bind(this));
+            
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(() => {
                     this.domElement.focus();
+                    this.domElement.blockKeyDownEvents();
                 }, 0);
             } else {
                 this.domElement.focus();
+                this.domElement.blockKeyDownEvents();
             }
 
             if (!this.game.device.desktop) {
@@ -431,13 +438,17 @@ module Fabrique {
             this.value = this.domElement.value;
 
             if (evt.keyCode === 13) {
-                this.endFocus();
+                if(this.toggleFocusOnEnter) {
+                    this.endFocus();
+                }
                 return;
             }
 
             this.updateText();
             this.updateCursor();
             this.updateSelection();
+
+            evt.preventDefault();
         }
 
         /**

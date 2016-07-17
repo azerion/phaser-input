@@ -26,7 +26,9 @@
 
     <!-- Game we want to track -->
     <script type="text/javascript">
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { create: create, preload: preload}, true);
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { create: create, preload: preload, update: update}, true);
+        var figure;
+        var testHolder;
         Phaser.Device.whenReady(function () {
             game.plugins.add(Fabrique.Plugins.InputField);
             game.plugins.add(Fabrique.Plugins.NineSlice);
@@ -36,6 +38,7 @@
             game.load.image('bg', 'images/bg.png');
             game.load.nineSlice('input', 'images/inputfield.png', 15);
             game.load.nineSlice('btn', 'images/btn_clean.png', 20, 23, 27, 28);
+            game.load.image('figure', 'images/figure.png');
         }
 
         function create(){
@@ -45,6 +48,10 @@
 
             //let's add a nice background
             game.add.image(0, 0, 'bg');
+
+            //add sprite
+            figure = game.add.image(30, 30, 'figure');
+
 
             //Oooe, there's a title here!
             var login = game.add.text(game.width / 2, 100, 'Log in to this awesome game!', {
@@ -90,6 +97,8 @@
                 type: Fabrique.InputType.password,
                 zoom: true
             });
+            password.toggleFocusOnEnter = false;
+            testHolder = password;
 
             //Let's not forget about age?!
             var ageBg = game.add.nineSlice(game.width / 2 + 5, 320, 'input', 200, 50);
@@ -152,7 +161,34 @@
                 console.error("keyboard close", Fabrique.Plugins.InputField.KeyboardOpen)
             });
 
+            console.log(figure);
+
         }
+
+        function update() {
+            if (game.input.keyboard.isDown(Phaser.Keyboard.A))
+            {
+                figure.x -= 4;
+                console.log(game.input.keyboard.event)
+            }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.D))
+            {
+                figure.x += 4;
+            }
+
+            if (game.input.keyboard.isDown(Phaser.Keyboard.W))
+            {
+                figure.y -= 4;
+            }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.S))
+            {
+                figure.y += 4;
+            }
+
+
+
+        }
+
     </script>
 </head>
 <body>

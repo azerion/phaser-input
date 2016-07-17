@@ -1,12 +1,3 @@
-/*!
- * phaser-input - version 1.1.4 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
- *
- * OrangeGames
- * Build at 14-05-2016
- * Released under MIT License 
- */
-
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -43,6 +34,15 @@ var Fabrique;
         InputElement.prototype.addKeyUpListener = function (callback) {
             this.callback = callback;
             document.addEventListener('keyup', this.callback);
+        };
+        InputElement.prototype.blockKeyDownEvents = function () {
+            document.addEventListener('keydown', this.preventKeyPropagration);
+        };
+        InputElement.prototype.preventKeyPropagration = function (evt) {
+            evt.stopPropagation();
+        };
+        InputElement.prototype.unblockKeyDownEvents = function () {
+            document.removeEventListener('keydown', this.preventKeyPropagration);
         };
         InputElement.prototype.removeEventListener = function () {
             document.removeEventListener('keyup', this.callback);
@@ -149,6 +149,8 @@ var Fabrique;
             var _this = this;
             if (inputOptions === void 0) { inputOptions = {}; }
             _super.call(this, game, x, y);
+            this.toggleFocusOnEnter = true;
+            this.hasFocus = false;
             this.placeHolder = null;
             this.box = null;
             this.focus = false;
@@ -288,6 +290,7 @@ var Fabrique;
         InputField.prototype.endFocus = function () {
             var _this = this;
             this.domElement.removeEventListener();
+            this.domElement.unblockKeyDownEvents();
             this.focus = false;
             if (this.value.length === 0 && null !== this.placeHolder) {
                 this.placeHolder.visible = true;
@@ -318,10 +321,12 @@ var Fabrique;
                 //Timeout is a chrome hack
                 setTimeout(function () {
                     _this.domElement.focus();
+                    _this.domElement.blockKeyDownEvents();
                 }, 0);
             }
             else {
                 this.domElement.focus();
+                this.domElement.blockKeyDownEvents();
             }
             if (!this.game.device.desktop) {
                 Fabrique.Plugins.InputField.KeyboardOpen = true;
@@ -496,12 +501,15 @@ var Fabrique;
         InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
             if (evt.keyCode === 13) {
-                this.endFocus();
+                if (this.toggleFocusOnEnter) {
+                    this.endFocus();
+                }
                 return;
             }
             this.updateText();
             this.updateCursor();
             this.updateSelection();
+            evt.preventDefault();
         };
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed

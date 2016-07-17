@@ -14,6 +14,9 @@ declare module Fabrique {
         focusOut: Phaser.Signal;
         constructor(game: Phaser.Game, id: string, type?: InputType, value?: string);
         addKeyUpListener(callback: () => void): void;
+        blockKeyDownEvents(): void;
+        private preventKeyPropagration(evt);
+        unblockKeyDownEvents(): void;
         removeEventListener(): void;
         destroy(): void;
         setMax(max: string, min?: string): void;
@@ -49,6 +52,8 @@ declare module Fabrique {
         zoom?: boolean;
     }
     class InputField extends Phaser.Sprite {
+        toggleFocusOnEnter: boolean;
+        hasFocus: boolean;
         private placeHolder;
         private box;
         private textMask;
