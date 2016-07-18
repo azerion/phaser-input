@@ -22,7 +22,7 @@ module Fabrique {
     }
 
     export class InputField extends Phaser.Sprite {
-        public FocusOutOnEnter: boolean = true;
+        public focusOutOnEnter: boolean = true;
 
         private placeHolder:Phaser.Text = null;
 
@@ -453,7 +453,7 @@ module Fabrique {
             this.value = this.domElement.value;
 
             if (evt.keyCode === 13) {
-                if(this.FocusOutOnEnter) {
+                if(this.focusOutOnEnter) {
                     this.endFocus();
                 }
                 return;

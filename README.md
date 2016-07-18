@@ -85,7 +85,7 @@ So the sprite will not move when typing into input field.
 
 
 ### Toggle Enter key
-InputField has a property (`FocusOutOnEnter`) that controls whether the inputfield will lose focus on pressing Enter.
+InputField has a property (`focusOutOnEnter`) that controls whether the input field will lose focus on pressing Enter.
 If set to true, pressing enter will end focus on the field (default is true).
 
 

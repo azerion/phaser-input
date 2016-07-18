@@ -163,7 +163,7 @@ var Fabrique;
             var _this = this;
             if (inputOptions === void 0) { inputOptions = {}; }
             _super.call(this, game, x, y);
-            this.FocusOutOnEnter = true;
+            this.focusOutOnEnter = true;
             this.placeHolder = null;
             this.box = null;
             this.focus = false;
@@ -524,7 +524,7 @@ var Fabrique;
         InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
             if (evt.keyCode === 13) {
-                if (this.FocusOutOnEnter) {
+                if (this.focusOutOnEnter) {
                     this.endFocus();
                 }
                 return;

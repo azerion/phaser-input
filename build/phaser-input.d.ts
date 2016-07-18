@@ -61,7 +61,7 @@ declare module Fabrique {
         zoom?: boolean;
     }
     class InputField extends Phaser.Sprite {
-        FocusOutOnEnter: boolean;
+        focusOutOnEnter: boolean;
         private placeHolder;
         private box;
         private textMask;
