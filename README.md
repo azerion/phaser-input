@@ -74,6 +74,21 @@ Fabrique.Plugins.InputField.onKeyboardClose.addOnce(function() {
                 });
 ```
 
+### Capture input events
+By default, input event will not bubble up to other elements
+This is controlled by an InputField property called `blockInput`.
+When set to false, the input event will trigger on the input element and move up to other elements listening for the event.
+
+e.g. An in-game sprite might be listening for keyboard events (W, A, S, D).
+If set to false, typing in input field will not trigger keyboard events for the sprite.
+So the sprite will not move when typing into input field.
+
+
+### Toggle Enter key
+InputField has a property (`FocusOutOnEnter`) that controls whether the inputfield will lose focus on pressing Enter.
+If set to true, pressing enter will end focus on the field (default is true).
+
+
 ### Current Limitations
  - Updates are slow when typing fast (type slower you!!)
  - Zoom modifies the pivot and scale of the world, so it might interfere with some stuff

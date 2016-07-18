@@ -14,8 +14,17 @@ declare module Fabrique {
         focusOut: Phaser.Signal;
         constructor(game: Phaser.Game, id: string, type?: InputType, value?: string);
         addKeyUpListener(callback: () => void): void;
+        /**
+         * Captures the keyboard event on keydown, used to prevent it going from input field to sprite
+         **/
         blockKeyDownEvents(): void;
-        private preventKeyPropagration(evt);
+        /**
+        * To prevent bubbling of keyboard event from input field to sprite
+        **/
+        private preventKeyPropagation(evt);
+        /**
+         * Remove listener that captures keydown keyboard events
+         **/
         unblockKeyDownEvents(): void;
         removeEventListener(): void;
         destroy(): void;
@@ -52,8 +61,7 @@ declare module Fabrique {
         zoom?: boolean;
     }
     class InputField extends Phaser.Sprite {
-        toggleFocusOnEnter: boolean;
-        hasFocus: boolean;
+        FocusOutOnEnter: boolean;
         private placeHolder;
         private box;
         private textMask;
@@ -66,6 +74,7 @@ declare module Fabrique {
         private domElement;
         private selection;
         private windowScale;
+        blockInput: boolean;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
         /**
          * This is a generic input down handler for the game.
@@ -93,6 +102,7 @@ declare module Fabrique {
          *
          */
         private startFocus();
+        private keyUpProcessor();
         /**
          * Update the text value in the box, and make sure the cursor is positioned correctly
          */

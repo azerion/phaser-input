@@ -51,16 +51,30 @@ module Fabrique {
             document.addEventListener('keyup', this.callback);
         }
 
+        /**
+         * Captures the keyboard event on keydown, used to prevent it going from input field to sprite
+         **/
         public blockKeyDownEvents(): void {
-            document.addEventListener('keydown', this.preventKeyPropagration);
+            document.addEventListener('keydown', this.preventKeyPropagation);
         }
 
-        private preventKeyPropagration(evt: KeyboardEvent): void{
-            evt.stopPropagation();
+        /**
+        * To prevent bubbling of keyboard event from input field to sprite
+        **/
+        private preventKeyPropagation(evt: KeyboardEvent): void{
+            if(evt.stopPropagation){
+                evt.stopPropagation();
+            } else {
+                //for IE < 9
+                event.cancelBubble = true;
+            }
         }
 
+        /**
+         * Remove listener that captures keydown keyboard events
+         **/
         public unblockKeyDownEvents(): void {
-            document.removeEventListener('keydown', this.preventKeyPropagration);
+            document.removeEventListener('keydown', this.preventKeyPropagation);
         }
 
         public removeEventListener(): void {
@@ -104,7 +118,6 @@ module Fabrique {
 
                 let kbAppeared: boolean = false;
                 let interval: number = setInterval((): void => {
-                    //console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight)
                     if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
                         kbAppeared = true;
                     }

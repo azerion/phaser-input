@@ -63,13 +63,14 @@
             //Here's the input field for the user's name
             var userBg = game.add.nineSlice(game.width / 2+ 5, 180, 'input', 200, 50);
             userBg.anchor.set(0.5);
+
             var user = game.add.inputField(game.width / 2 - 85, 180 - 17, {
                 font: '18px Arial',
                 fill: '#212121',
                 fillAlpha: 0,
                 fontWeight: 'bold',
                 width: 150,
-                max: 10,
+                max: 20,
                 padding: 8,
                 borderWidth: 1,
                 borderColor: '#000',
@@ -79,6 +80,7 @@
                 zoom: true
             });
             user.setText('prefilled name');
+            user.blockInput = false;
 
             //We'd need a password too
             var passBg = game.add.nineSlice(game.width / 2+ 5, 250, 'input', 200, 50);
@@ -97,7 +99,7 @@
                 type: Fabrique.InputType.password,
                 zoom: true
             });
-            password.toggleFocusOnEnter = false;
+            password.FocusOutOnEnter = false;
             testHolder = password;
 
             //Let's not forget about age?!
@@ -161,15 +163,12 @@
                 console.error("keyboard close", Fabrique.Plugins.InputField.KeyboardOpen)
             });
 
-            console.log(figure);
-
         }
 
         function update() {
             if (game.input.keyboard.isDown(Phaser.Keyboard.A))
             {
                 figure.x -= 4;
-                console.log(game.input.keyboard.event)
             }
             else if (game.input.keyboard.isDown(Phaser.Keyboard.D))
             {

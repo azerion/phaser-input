@@ -35,14 +35,29 @@ var Fabrique;
             this.callback = callback;
             document.addEventListener('keyup', this.callback);
         };
+        /**
+         * Captures the keyboard event on keydown, used to prevent it going from input field to sprite
+         **/
         InputElement.prototype.blockKeyDownEvents = function () {
-            document.addEventListener('keydown', this.preventKeyPropagration);
+            document.addEventListener('keydown', this.preventKeyPropagation);
         };
-        InputElement.prototype.preventKeyPropagration = function (evt) {
-            evt.stopPropagation();
+        /**
+        * To prevent bubbling of keyboard event from input field to sprite
+        **/
+        InputElement.prototype.preventKeyPropagation = function (evt) {
+            if (evt.stopPropagation) {
+                evt.stopPropagation();
+            }
+            else {
+                //for IE < 9
+                event.cancelBubble = true;
+            }
         };
+        /**
+         * Remove listener that captures keydown keyboard events
+         **/
         InputElement.prototype.unblockKeyDownEvents = function () {
-            document.removeEventListener('keydown', this.preventKeyPropagration);
+            document.removeEventListener('keydown', this.preventKeyPropagation);
         };
         InputElement.prototype.removeEventListener = function () {
             document.removeEventListener('keyup', this.callback);
@@ -82,7 +97,6 @@ var Fabrique;
                 var originalWidth = window.innerWidth, originalHeight = window.innerHeight;
                 var kbAppeared = false;
                 var interval = setInterval(function () {
-                    //console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight)
                     if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
                         kbAppeared = true;
                     }
@@ -149,13 +163,13 @@ var Fabrique;
             var _this = this;
             if (inputOptions === void 0) { inputOptions = {}; }
             _super.call(this, game, x, y);
-            this.toggleFocusOnEnter = true;
-            this.hasFocus = false;
+            this.FocusOutOnEnter = true;
             this.placeHolder = null;
             this.box = null;
             this.focus = false;
             this.value = '';
             this.windowScale = 1;
+            this.blockInput = true;
             /**
              * Update function makes the cursor blink, it uses two private properties to make it toggle
              *
@@ -251,6 +265,9 @@ var Fabrique;
          * @param e Phaser.Pointer
          */
         InputField.prototype.checkDown = function (e) {
+            if (!this.value) {
+                this.resetText();
+            }
             if (this.input.checkPointerOver(e)) {
                 if (this.focus) {
                     this.setCaretOnclick(e);
@@ -290,7 +307,9 @@ var Fabrique;
         InputField.prototype.endFocus = function () {
             var _this = this;
             this.domElement.removeEventListener();
-            this.domElement.unblockKeyDownEvents();
+            if (this.blockInput === true) {
+                this.domElement.unblockKeyDownEvents();
+            }
             this.focus = false;
             if (this.value.length === 0 && null !== this.placeHolder) {
                 this.placeHolder.visible = true;
@@ -316,21 +335,25 @@ var Fabrique;
         InputField.prototype.startFocus = function () {
             var _this = this;
             this.focus = true;
-            this.domElement.addKeyUpListener(this.keyListener.bind(this));
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(function () {
-                    _this.domElement.focus();
-                    _this.domElement.blockKeyDownEvents();
+                    _this.keyUpProcessor();
                 }, 0);
             }
             else {
-                this.domElement.focus();
-                this.domElement.blockKeyDownEvents();
+                this.keyUpProcessor();
             }
             if (!this.game.device.desktop) {
                 Fabrique.Plugins.InputField.KeyboardOpen = true;
                 Fabrique.Plugins.InputField.onKeyboardOpen.dispatch();
+            }
+        };
+        InputField.prototype.keyUpProcessor = function () {
+            this.domElement.addKeyUpListener(this.keyListener.bind(this));
+            this.domElement.focus();
+            if (this.blockInput === true) {
+                this.domElement.blockKeyDownEvents();
             }
         };
         /**
@@ -501,7 +524,7 @@ var Fabrique;
         InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
             if (evt.keyCode === 13) {
-                if (this.toggleFocusOnEnter) {
+                if (this.FocusOutOnEnter) {
                     this.endFocus();
                 }
                 return;

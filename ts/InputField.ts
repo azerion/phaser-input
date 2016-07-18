@@ -22,9 +22,7 @@ module Fabrique {
     }
 
     export class InputField extends Phaser.Sprite {
-        public toggleFocusOnEnter: boolean = true;
-
-        public hasFocus: boolean = false;
+        public FocusOutOnEnter: boolean = true;
 
         private placeHolder:Phaser.Text = null;
 
@@ -49,6 +47,9 @@ module Fabrique {
         private selection: SelectionHighlight;
 
         private windowScale: number = 1;
+
+        public blockInput: boolean = true;
+
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
@@ -73,14 +74,16 @@ module Fabrique {
             this.addChild(this.textMask);
 
             //Create the hidden dom elements
-            this.domElement = new InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
+            this.domElement = new InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(),
+                this.inputOptions.type, this.value);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
 
             this.selection = new SelectionHighlight(this.game, this.inputOptions);
             this.addChild(this.selection);
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
-                this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, <Phaser.PhaserTextStyle>{
+                this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding,
+                    inputOptions.placeHolder, <Phaser.PhaserTextStyle>{
                     font: inputOptions.font || '14px Arial',
                     fontWeight: inputOptions.fontWeight || 'normal',
                     fill: inputOptions.placeHolderColor || '#bfbebd'
@@ -155,6 +158,9 @@ module Fabrique {
          */
         private checkDown(e: Phaser.Pointer): void
         {
+            if(!this.value){
+                this.resetText();
+            }
             if (this.input.checkPointerOver(e)) {
                 if (this.focus) {
                     this.setCaretOnclick(e);
@@ -206,7 +212,10 @@ module Fabrique {
          */
         private endFocus() {            
             this.domElement.removeEventListener();
-            this.domElement.unblockKeyDownEvents();
+
+            if(this.blockInput === true) {
+                this.domElement.unblockKeyDownEvents();
+            }            
             
             this.focus = false;
             if (this.value.length === 0 && null !== this.placeHolder) {
@@ -233,23 +242,29 @@ module Fabrique {
          *
          */
         private startFocus() {
-            this.focus = true;            
-            this.domElement.addKeyUpListener(this.keyListener.bind(this));
+            this.focus = true;
             
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(() => {
-                    this.domElement.focus();
-                    this.domElement.blockKeyDownEvents();
+                    this.keyUpProcessor();
                 }, 0);
             } else {
-                this.domElement.focus();
-                this.domElement.blockKeyDownEvents();
+                this.keyUpProcessor();
             }
 
             if (!this.game.device.desktop) {
                 Plugins.InputField.KeyboardOpen = true;
                 Plugins.InputField.onKeyboardOpen.dispatch();
+            }
+        }
+
+        private keyUpProcessor():void {
+            this.domElement.addKeyUpListener(this.keyListener.bind(this));
+            this.domElement.focus();
+            
+            if(this.blockInput === true) {
+                this.domElement.blockKeyDownEvents();
             }
         }
 
@@ -438,7 +453,7 @@ module Fabrique {
             this.value = this.domElement.value;
 
             if (evt.keyCode === 13) {
-                if(this.toggleFocusOnEnter) {
+                if(this.FocusOutOnEnter) {
                     this.endFocus();
                 }
                 return;
