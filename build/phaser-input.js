@@ -1,3 +1,12 @@
+/*!
+ * phaser-input - version 1.1.5 
+ * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
+ *
+ * OrangeGames
+ * Build at 25-07-2016
+ * Released under MIT License 
+ */
+
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -34,30 +43,6 @@ var Fabrique;
         InputElement.prototype.addKeyUpListener = function (callback) {
             this.callback = callback;
             document.addEventListener('keyup', this.callback);
-        };
-        /**
-         * Captures the keyboard event on keydown, used to prevent it going from input field to sprite
-         **/
-        InputElement.prototype.blockKeyDownEvents = function () {
-            document.addEventListener('keydown', this.preventKeyPropagation);
-        };
-        /**
-        * To prevent bubbling of keyboard event from input field to sprite
-        **/
-        InputElement.prototype.preventKeyPropagation = function (evt) {
-            if (evt.stopPropagation) {
-                evt.stopPropagation();
-            }
-            else {
-                //for IE < 9
-                event.cancelBubble = true;
-            }
-        };
-        /**
-         * Remove listener that captures keydown keyboard events
-         **/
-        InputElement.prototype.unblockKeyDownEvents = function () {
-            document.removeEventListener('keydown', this.preventKeyPropagation);
         };
         InputElement.prototype.removeEventListener = function () {
             document.removeEventListener('keyup', this.callback);
@@ -97,6 +82,7 @@ var Fabrique;
                 var originalWidth = window.innerWidth, originalHeight = window.innerHeight;
                 var kbAppeared = false;
                 var interval = setInterval(function () {
+                    //console.log(originalWidth, window.innerWidth, originalHeight, window.innerHeight)
                     if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
                         kbAppeared = true;
                     }
@@ -163,13 +149,11 @@ var Fabrique;
             var _this = this;
             if (inputOptions === void 0) { inputOptions = {}; }
             _super.call(this, game, x, y);
-            this.focusOutOnEnter = true;
             this.placeHolder = null;
             this.box = null;
             this.focus = false;
             this.value = '';
             this.windowScale = 1;
-            this.blockInput = true;
             /**
              * Update function makes the cursor blink, it uses two private properties to make it toggle
              *
@@ -265,9 +249,6 @@ var Fabrique;
          * @param e Phaser.Pointer
          */
         InputField.prototype.checkDown = function (e) {
-            if (!this.value) {
-                this.resetText();
-            }
             if (this.input.checkPointerOver(e)) {
                 if (this.focus) {
                     this.setCaretOnclick(e);
@@ -307,9 +288,6 @@ var Fabrique;
         InputField.prototype.endFocus = function () {
             var _this = this;
             this.domElement.removeEventListener();
-            if (this.blockInput === true) {
-                this.domElement.unblockKeyDownEvents();
-            }
             this.focus = false;
             if (this.value.length === 0 && null !== this.placeHolder) {
                 this.placeHolder.visible = true;
@@ -335,25 +313,19 @@ var Fabrique;
         InputField.prototype.startFocus = function () {
             var _this = this;
             this.focus = true;
+            this.domElement.addKeyUpListener(this.keyListener.bind(this));
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(function () {
-                    _this.keyUpProcessor();
+                    _this.domElement.focus();
                 }, 0);
             }
             else {
-                this.keyUpProcessor();
+                this.domElement.focus();
             }
             if (!this.game.device.desktop) {
                 Fabrique.Plugins.InputField.KeyboardOpen = true;
                 Fabrique.Plugins.InputField.onKeyboardOpen.dispatch();
-            }
-        };
-        InputField.prototype.keyUpProcessor = function () {
-            this.domElement.addKeyUpListener(this.keyListener.bind(this));
-            this.domElement.focus();
-            if (this.blockInput === true) {
-                this.domElement.blockKeyDownEvents();
             }
         };
         /**
@@ -524,15 +496,12 @@ var Fabrique;
         InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
             if (evt.keyCode === 13) {
-                if (this.focusOutOnEnter) {
-                    this.endFocus();
-                }
+                this.endFocus();
                 return;
             }
             this.updateText();
             this.updateCursor();
             this.updateSelection();
-            evt.preventDefault();
         };
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
@@ -565,6 +534,15 @@ var Fabrique;
     })(Phaser.Sprite);
     Fabrique.InputField = InputField;
 })(Fabrique || (Fabrique = {}));
+if (typeof define === "function" && define.amd) {
+    this.Fabrique = Fabrique, define(Fabrique);
+}
+else if (typeof module === "object" && module.exports) {
+    module.exports = Fabrique;
+}
+else {
+    this.Fabrique = Fabrique;
+}
 var Fabrique;
 (function (Fabrique) {
     var InputBox = (function (_super) {

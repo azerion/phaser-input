@@ -144,6 +144,8 @@ declare module Fabrique {
         setText(text?: string): void;
     }
 }
+declare var define: (object: any) => {};
+declare var module: any;
 declare module Fabrique {
     class InputBox extends Phaser.Graphics {
         constructor(game: Phaser.Game, inputOptions: InputOptions);

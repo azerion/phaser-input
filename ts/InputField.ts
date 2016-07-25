@@ -497,3 +497,13 @@ module Fabrique {
         }
     }
 }
+
+declare var define: (object: any) => {};
+declare var module: any;
+if (typeof define === "function" && (<any>define).amd ) {
+    this.Fabrique = Fabrique, define(Fabrique);
+} else if (typeof module === "object" && module.exports) {
+    module.exports = Fabrique;
+} else {
+    this.Fabrique = Fabrique;
+}
