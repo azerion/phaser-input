@@ -29,6 +29,7 @@
         var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { create: create, preload: preload}, true);
         var figure;
         var testHolder;
+        var password;
         Phaser.Device.whenReady(function () {
             game.plugins.add(Fabrique.Plugins.InputField);
             game.plugins.add(Fabrique.Plugins.NineSlice);
@@ -80,7 +81,7 @@
             //We'd need a password too
             var passBg = game.add.nineSlice(game.width / 2+ 5, 250, 'input', 200, 50);
             passBg.anchor.set(0.5);
-            var password = game.add.inputField(game.width / 2 - 85, 250 - 17, {
+            password = game.add.inputField(game.width / 2 - 85, 250 - 17, {
                 font: '18px Arial',
                 fill: '#212121',
                 fillAlpha: 0,

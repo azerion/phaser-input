@@ -558,11 +558,13 @@ var Fabrique;
         };
         InputField.prototype.setText = function (text) {
             if (text === void 0) { text = ''; }
-            if (text.length > 0) {
-                this.placeHolder.visible = false;
-            }
-            else {
-                this.placeHolder.visible = true;
+            if (null !== this.placeHolder) {
+                if (text.length > 0) {
+                    this.placeHolder.visible = false;
+                }
+                else {
+                    this.placeHolder.visible = true;
+                }
             }
             this.value = text;
             this.domElement.value = this.value;

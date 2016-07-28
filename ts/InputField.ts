@@ -483,10 +483,12 @@ module Fabrique {
         }
 
         public setText(text: string = ''): void {
-            if  (text.length > 0) {
-                this.placeHolder.visible = false;
-            } else {
-                this.placeHolder.visible = true;
+            if (null !== this.placeHolder) {
+                if (text.length > 0) {
+                    this.placeHolder.visible = false;
+                } else {
+                    this.placeHolder.visible = true;
+                }
             }
 
             this.value = text;
