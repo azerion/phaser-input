@@ -167,10 +167,6 @@ module Fabrique {
                     return;
                 }
 
-                if (null !== this.placeHolder) {
-                    this.placeHolder.visible = false;
-                }
-
                 if (this.inputOptions.zoom && !Fabrique.Plugins.InputField.Zoomed) {
                     this.zoomIn();
                 }
@@ -210,7 +206,7 @@ module Fabrique {
         /**
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
-        private endFocus() {            
+        public endFocus() {
             this.domElement.removeEventListener();
 
             if(this.blockInput === true) {
@@ -241,9 +237,13 @@ module Fabrique {
         /**
          *
          */
-        private startFocus() {
+        public startFocus() {
             this.focus = true;
-            
+
+            if (null !== this.placeHolder) {
+                this.placeHolder.visible = false;
+            }
+
             if (this.game.device.desktop) {
                 //Timeout is a chrome hack
                 setTimeout(() => {

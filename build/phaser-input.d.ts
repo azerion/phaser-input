@@ -97,11 +97,11 @@ declare module Fabrique {
         /**
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
-        private endFocus();
+        endFocus(): void;
         /**
          *
          */
-        private startFocus();
+        startFocus(): void;
         private keyUpProcessor();
         /**
          * Update the text value in the box, and make sure the cursor is positioned correctly
