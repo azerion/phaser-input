@@ -19,7 +19,7 @@ module Fabrique {
             public static onKeyboardOpen: Phaser.Signal = new Phaser.Signal();
             public static onKeyboardClose: Phaser.Signal = new Phaser.Signal();
 
-            constructor(game:Phaser.Game, parent:PIXI.DisplayObject) {
+            constructor(game:Phaser.Game, parent:Phaser.PluginManager) {
                 super(game, parent);
 
                 this.addInputFieldFactory();
