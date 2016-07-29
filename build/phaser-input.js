@@ -576,15 +576,6 @@ var Fabrique;
     })(Phaser.Sprite);
     Fabrique.InputField = InputField;
 })(Fabrique || (Fabrique = {}));
-if (typeof define === "function" && define.amd) {
-    this.Fabrique = Fabrique, define(Fabrique);
-}
-else if (typeof module === "object" && module.exports) {
-    module.exports = Fabrique;
-}
-else {
-    this.Fabrique = Fabrique;
-}
 var Fabrique;
 (function (Fabrique) {
     var InputBox = (function (_super) {

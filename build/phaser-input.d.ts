@@ -144,8 +144,6 @@ declare module Fabrique {
         setText(text?: string): void;
     }
 }
-declare var define: (object: any) => {};
-declare var module: any;
 declare module Fabrique {
     class InputBox extends Phaser.Graphics {
         constructor(game: Phaser.Game, inputOptions: InputOptions);
@@ -186,7 +184,7 @@ declare module Fabrique {
             static KeyboardOpen: boolean;
             static onKeyboardOpen: Phaser.Signal;
             static onKeyboardClose: Phaser.Signal;
-            constructor(game: Phaser.Game, parent: PIXI.DisplayObject);
+            constructor(game: Phaser.Game, parent: Phaser.PluginManager);
             /**
              * Extends the GameObjectFactory prototype with the support of adding InputField. this allows us to add InputField methods to the game just like any other object:
              * game.add.InputField();
