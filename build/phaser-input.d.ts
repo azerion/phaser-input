@@ -136,7 +136,7 @@ declare module Fabrique {
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
          */
-        destroy(): void;
+        destroy(destroyChildren?: boolean): void;
         /**
          * Resets the text to an empty value
          */

@@ -281,9 +281,9 @@ module Fabrique {
             }else if (this.inputOptions.type === InputType.number) {
                 var val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
-                    text = this.inputOptions.min;
+                    text = this.value = this.domElement.value = this.inputOptions.min;
                 } else if (val > parseInt(this.inputOptions.max)) {
-                    text = this.inputOptions.max;
+                    text = this.value = this.domElement.value = this.inputOptions.max;
                 } else {
                     text = this.value;
                 }
@@ -469,10 +469,13 @@ module Fabrique {
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
          */
-        public destroy() {
+        public destroy(destroyChildren?: boolean) {
+            this.game.input.onDown.remove(this.checkDown, this);
+            this.domElement.focusIn.removeAll();
+            this.domElement.focusOut.removeAll();
             this.domElement.destroy();
 
-            super.destroy();
+            super.destroy(destroyChildren);
         }
 
         /**

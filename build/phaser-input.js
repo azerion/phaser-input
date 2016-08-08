@@ -1,9 +1,9 @@
 /*!
- * phaser-input - version 1.2.4 
+ * phaser-input - version 1.2.5 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 29-07-2016
+ * Build at 08-08-2016
  * Released under MIT License 
  */
 
@@ -378,10 +378,10 @@ var Fabrique;
             else if (this.inputOptions.type === Fabrique.InputType.number) {
                 var val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
-                    text = this.inputOptions.min;
+                    text = this.value = this.domElement.value = this.inputOptions.min;
                 }
                 else if (val > parseInt(this.inputOptions.max)) {
-                    text = this.inputOptions.max;
+                    text = this.value = this.domElement.value = this.inputOptions.max;
                 }
                 else {
                     text = this.value;
@@ -546,9 +546,12 @@ var Fabrique;
         /**
          * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
          */
-        InputField.prototype.destroy = function () {
+        InputField.prototype.destroy = function (destroyChildren) {
+            this.game.input.onDown.remove(this.checkDown, this);
+            this.domElement.focusIn.removeAll();
+            this.domElement.focusOut.removeAll();
             this.domElement.destroy();
-            _super.prototype.destroy.call(this);
+            _super.prototype.destroy.call(this, destroyChildren);
         };
         /**
          * Resets the text to an empty value
