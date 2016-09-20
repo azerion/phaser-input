@@ -125,6 +125,19 @@ Tested on:
   * Chrome 48+
   * iOS 9+
 
+FAQ
+---
+### I Don't see the cursor blinking!
+This is most likely due to you adding the input field to a custom Phaser object. According to the [Phaser docs](http://phaser.io/docs/2.6.2/Phaser.Sprite.html#update) the update function needs to be called manually in these cases.
+
+So add the following to your object and the cursor should work :)
+
+```javascript
+update: function () {
+    this._inputField.update();
+},
+```
+
 Credits
 -------
 phaser-input is inspired by [CanvasInput](https://github.com/goldfire/CanvasInput)
