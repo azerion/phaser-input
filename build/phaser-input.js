@@ -1,12 +1,8 @@
-/*!
- * phaser-input - version 1.2.5 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
- *
- * OrangeGames
- * Build at 08-08-2016
- * Released under MIT License 
- */
-
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var Fabrique;
 (function (Fabrique) {
     (function (InputType) {
@@ -44,27 +40,17 @@ var Fabrique;
             this.callback = callback;
             document.addEventListener('keyup', this.callback);
         };
-        /**
-         * Captures the keyboard event on keydown, used to prevent it going from input field to sprite
-         **/
         InputElement.prototype.blockKeyDownEvents = function () {
             document.addEventListener('keydown', this.preventKeyPropagation);
         };
-        /**
-        * To prevent bubbling of keyboard event from input field to sprite
-        **/
         InputElement.prototype.preventKeyPropagation = function (evt) {
             if (evt.stopPropagation) {
                 evt.stopPropagation();
             }
             else {
-                //for IE < 9
                 event.cancelBubble = true;
             }
         };
-        /**
-         * Remove listener that captures keydown keyboard events
-         **/
         InputElement.prototype.unblockKeyDownEvents = function () {
             document.removeEventListener('keydown', this.preventKeyPropagation);
         };
@@ -103,15 +89,15 @@ var Fabrique;
             var _this = this;
             this.element.focus();
             if (!this.game.device.desktop && this.game.device.chrome) {
-                var originalWidth = window.innerWidth, originalHeight = window.innerHeight;
-                var kbAppeared = false;
-                var interval = setInterval(function () {
-                    if (originalWidth > window.innerWidth || originalHeight > window.innerHeight) {
-                        kbAppeared = true;
+                var originalWidth_1 = window.innerWidth, originalHeight_1 = window.innerHeight;
+                var kbAppeared_1 = false;
+                var interval_1 = setInterval(function () {
+                    if (originalWidth_1 > window.innerWidth || originalHeight_1 > window.innerHeight) {
+                        kbAppeared_1 = true;
                     }
-                    if (kbAppeared && originalWidth === window.innerWidth && originalHeight === window.innerHeight) {
+                    if (kbAppeared_1 && originalWidth_1 === window.innerWidth && originalHeight_1 === window.innerHeight) {
                         _this.focusOut.dispatch();
-                        clearInterval(interval);
+                        clearInterval(interval_1);
                     }
                 }, 50);
             }
@@ -156,14 +142,9 @@ var Fabrique;
             this.element.setSelectionRange(pos, pos);
         };
         return InputElement;
-    })();
+    }());
     Fabrique.InputElement = InputElement;
 })(Fabrique || (Fabrique = {}));
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var Fabrique;
 (function (Fabrique) {
     var InputField = (function (_super) {
@@ -179,14 +160,8 @@ var Fabrique;
             this.value = '';
             this.windowScale = 1;
             this.blockInput = true;
-            /**
-             * Update function makes the cursor blink, it uses two private properties to make it toggle
-             *
-             * @returns {number}
-             */
             this.blink = true;
             this.cnt = 0;
-            //Parse the options
             this.inputOptions = inputOptions;
             this.inputOptions.width = inputOptions.width || 150;
             this.inputOptions.padding = inputOptions.padding || 0;
@@ -197,13 +172,10 @@ var Fabrique;
             this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
             this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
             this.inputOptions.zoom = (!game.device.desktop) ? inputOptions.zoom || false : false;
-            //create the input box
             this.box = new Fabrique.InputBox(this.game, inputOptions);
             this.setTexture(this.box.generateTexture());
-            //create the mask that will be used for the texts
             this.textMask = new Fabrique.TextMask(this.game, inputOptions);
             this.addChild(this.textMask);
-            //Create the hidden dom elements
             this.domElement = new Fabrique.InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
             this.selection = new Fabrique.SelectionHighlight(this.game, this.inputOptions);
@@ -264,15 +236,6 @@ var Fabrique;
                 }
             });
         }
-        /**
-         * This is a generic input down handler for the game.
-         * if the input object is clicked, we gain focus on it and create the dom element
-         *
-         * If there was focus on the element previously, but clicked outside of it, the element will loose focus
-         * and no keyboard events will be registered anymore
-         *
-         * @param e Phaser.Pointer
-         */
         InputField.prototype.checkDown = function (e) {
             if (!this.value) {
                 this.resetText();
@@ -307,9 +270,6 @@ var Fabrique;
             this.blink = !this.blink;
             this.cnt = 0;
         };
-        /**
-         * Focus is lost on the input element, we disable the cursor and remove the hidden input element
-         */
         InputField.prototype.endFocus = function () {
             var _this = this;
             this.domElement.removeEventListener();
@@ -322,7 +282,6 @@ var Fabrique;
             }
             this.cursor.visible = false;
             if (this.game.device.desktop) {
-                //Timeout is a chrome hack
                 setTimeout(function () {
                     _this.domElement.blur();
                 }, 0);
@@ -335,9 +294,6 @@ var Fabrique;
                 Fabrique.Plugins.InputField.onKeyboardClose.dispatch();
             }
         };
-        /**
-         *
-         */
         InputField.prototype.startFocus = function () {
             var _this = this;
             this.focus = true;
@@ -345,7 +301,6 @@ var Fabrique;
                 this.placeHolder.visible = false;
             }
             if (this.game.device.desktop) {
-                //Timeout is a chrome hack
                 setTimeout(function () {
                     _this.keyUpProcessor();
                 }, 0);
@@ -365,9 +320,6 @@ var Fabrique;
                 this.domElement.blockKeyDownEvents();
             }
         };
-        /**
-         * Update the text value in the box, and make sure the cursor is positioned correctly
-         */
         InputField.prototype.updateText = function () {
             var text = '';
             if (this.inputOptions.type === Fabrique.InputType.password) {
@@ -412,9 +364,6 @@ var Fabrique;
                 }
             }
         };
-        /**
-         * Updates the position of the caret in the phaser input field
-         */
         InputField.prototype.updateCursor = function () {
             if (this.text.width > this.inputOptions.width || this.inputOptions.textAlign === 'right') {
                 this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
@@ -430,11 +379,6 @@ var Fabrique;
                 }
             }
         };
-        /**
-         * Fetches the carrot position from the dom element. This one changes when you use the keyboard to navigate the element
-         *
-         * @returns {number}
-         */
         InputField.prototype.getCaretPosition = function () {
             var caretPosition = this.domElement.getCaretPosition();
             if (-1 === caretPosition) {
@@ -450,11 +394,6 @@ var Fabrique;
             this.offscreenText.setText(text.slice(0, caretPosition));
             return this.offscreenText.width;
         };
-        /**
-         * Set the caret when a click was made in the input field
-         *
-         * @param e
-         */
         InputField.prototype.setCaretOnclick = function (e) {
             var localX = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.world)).x;
             if (this.inputOptions.textAlign && this.inputOptions.textAlign === 'center') {
@@ -475,9 +414,6 @@ var Fabrique;
             this.domElement.setCaretPosition(index);
             this.updateCursor();
         };
-        /**
-         * This checks if a select has been made, and if so highlight it with blue
-         */
         InputField.prototype.updateSelection = function () {
             if (this.domElement.hasSelection) {
                 var text = this.value;
@@ -527,9 +463,6 @@ var Fabrique;
             this.game.world.pivot.set(0, 0);
             Fabrique.Plugins.InputField.Zoomed = false;
         };
-        /**
-         * Event fired when a key is pressed, it takes the value from the hidden input field and adds it as its own
-         */
         InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
             if (evt.keyCode === 13) {
@@ -543,9 +476,6 @@ var Fabrique;
             this.updateSelection();
             evt.preventDefault();
         };
-        /**
-         * We overwrite the destroy method because we want to delete the (hidden) dom element when the inputField was removed
-         */
         InputField.prototype.destroy = function (destroyChildren) {
             this.game.input.onDown.remove(this.checkDown, this);
             this.domElement.focusIn.removeAll();
@@ -553,9 +483,6 @@ var Fabrique;
             this.domElement.destroy();
             _super.prototype.destroy.call(this, destroyChildren);
         };
-        /**
-         * Resets the text to an empty value
-         */
         InputField.prototype.resetText = function () {
             this.setText();
         };
@@ -576,7 +503,7 @@ var Fabrique;
             this.endFocus();
         };
         return InputField;
-    })(Phaser.Sprite);
+    }(Phaser.Sprite));
     Fabrique.InputField = InputField;
 })(Fabrique || (Fabrique = {}));
 var Fabrique;
@@ -587,7 +514,6 @@ var Fabrique;
             _super.call(this, game, 0, 0);
             var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff, borderRadius = inputOptions.borderRadius || 0, borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595, alpha = inputOptions.fillAlpha, height = inputOptions.height;
             if (inputOptions.font) {
-                //fetch height from font;
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
             height = inputOptions.padding * 2 + height;
@@ -603,7 +529,7 @@ var Fabrique;
             }
         }
         return InputBox;
-    })(Phaser.Graphics);
+    }(Phaser.Graphics));
     Fabrique.InputBox = InputBox;
 })(Fabrique || (Fabrique = {}));
 var Fabrique;
@@ -626,7 +552,7 @@ var Fabrique;
                 ("0" + color.b.toString(16)).slice(-2), 16);
         };
         return SelectionHighlight;
-    })(Phaser.Graphics);
+    }(Phaser.Graphics));
     Fabrique.SelectionHighlight = SelectionHighlight;
 })(Fabrique || (Fabrique = {}));
 var Fabrique;
@@ -637,7 +563,6 @@ var Fabrique;
             _super.call(this, game, inputOptions.padding, inputOptions.padding);
             var borderRadius = inputOptions.borderRadius, height = inputOptions.height;
             if (inputOptions.font) {
-                //fetch height from font;
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
             var width = inputOptions.width;
@@ -650,7 +575,7 @@ var Fabrique;
             }
         }
         return TextMask;
-    })(Phaser.Graphics);
+    }(Phaser.Graphics));
     Fabrique.TextMask = TextMask;
 })(Fabrique || (Fabrique = {}));
 var Fabrique;
@@ -663,10 +588,6 @@ var Fabrique;
                 _super.call(this, game, parent);
                 this.addInputFieldFactory();
             }
-            /**
-             * Extends the GameObjectFactory prototype with the support of adding InputField. this allows us to add InputField methods to the game just like any other object:
-             * game.add.InputField();
-             */
             InputField.prototype.addInputFieldFactory = function () {
                 Phaser.GameObjectFactory.prototype.inputField = function (x, y, inputOptions, group) {
                     if (group === undefined) {
@@ -684,7 +605,7 @@ var Fabrique;
             InputField.onKeyboardOpen = new Phaser.Signal();
             InputField.onKeyboardClose = new Phaser.Signal();
             return InputField;
-        })(Phaser.Plugin);
+        }(Phaser.Plugin));
         Plugins.InputField = InputField;
     })(Plugins = Fabrique.Plugins || (Fabrique.Plugins = {}));
 })(Fabrique || (Fabrique = {}));

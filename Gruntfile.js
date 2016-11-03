@@ -24,26 +24,23 @@ module.exports = function (grunt) {
             }
         },
         //Typescript settings per build
-        typescript: {
+        ts: {
             options: {
                 module: 'amd',
                 target: 'es5',
                 sourceMap: true,
                 declaration: true,
-                references: [
-                    'node_modules/phaser/typescript/pixi.d.ts',
-                    'node_modules/phaser/typescript/phaser.d.ts'
-                ],
                 noImplicitAny: true
             },
             dist: {
                 src: ['ts/**/*.ts'],
+                reference: 'ts/references.ts',
                 dest: 'build/<%= pkg.name %>.js'
             }
         },
         watch: {
             files: ['ts/**/*.ts'],
-            tasks: ['typescript'],
+            tasks: ['ts'],
             options: {
                 livereload: true
             }
@@ -86,20 +83,20 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-banner');
-    grunt.loadNpmTasks('grunt-typescript');
+    grunt.loadNpmTasks('grunt-ts');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     //dist Build
     grunt.registerTask('dist', [
         'clean:dist',     //Clean the dist folder
-        'typescript:dist',//Run typescript on the preprocessed files, for dist (client)
+        'ts:dist',//Run typescript on the preprocessed files, for dist (client)
         'uglify:dist',    //Minify everything
         'usebanner:dist'    //Minify everything
     ]);
 
     grunt.registerTask('dev', [
-        'typescript:dist',
+        'ts:dist',
         'connect',
         'watch'
     ]);

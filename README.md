@@ -105,7 +105,7 @@ If set to true, pressing enter will end focus on the field (default is true).
  - **borderColor**: string (#000 by default) Color of the border
  - **borderRadius**: number (0 by default) Create rounded corners by setting a border radius
  - **placeHolder**: string ('' by default) Text that will be shown before the user input's anything
- - **placeHolderColor**: string (#000 by default) The color of the placeholder text
+ - **placeHolderColor**: string (#bfbebd by default) The color of the placeholder text
  - **type**: InputType (text by default) Either text, password or numeric
  - **backgroundColor**: string (#fff  by default) The background color of the input box
  - **cursorColor**: string (#000 by default) The color of the blinking cursor
