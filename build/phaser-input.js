@@ -191,6 +191,7 @@ var Fabrique;
             this.domElement = new Fabrique.InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
             this.selection = new Fabrique.SelectionHighlight(this.game, this.inputOptions);
+            this.selection.mask = this.textMask;
             this.addChild(this.selection);
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
                 this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, {
