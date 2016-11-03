@@ -26,12 +26,16 @@ module Fabrique {
             this.type = type;
             this.game = game;
 
+            let canvasTopX: number = this.game.canvas.getBoundingClientRect().top + document.body.scrollTop;
+
             this.element = document.createElement('input');
 
             this.element.id = id;
             this.element.style.position = 'absolute';
-            this.element.style.top = (-100).toString() + 'px';
-            this.element.style.left = (-100).toString() + 'px';
+            this.element.style.top = canvasTopX + 'px';
+            this.element.style.left = (-20).toString() + 'px';
+            this.element.style.width = (10).toString() + 'px';
+            this.element.style.height = (10).toString() + 'px';
             this.element.value = this.value;
             this.element.type = InputType[type];
 
