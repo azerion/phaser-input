@@ -207,6 +207,10 @@ module Fabrique {
          * Focus is lost on the input element, we disable the cursor and remove the hidden input element
          */
         public endFocus() {
+            if(!this.focus){
+                return;
+            }
+        
             this.domElement.removeEventListener();
 
             if(this.blockInput === true) {
