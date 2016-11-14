@@ -11,14 +11,11 @@ module Fabrique {
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
             var width = inputOptions.width;
+            height *= 1.3;
 
             this.beginFill(0x000000);
 
-            if (borderRadius > 0) {
-                this.drawRoundedRect(0, 0, width, height, borderRadius);
-            } else {
-                this.drawRect(0, 0, width, height);
-            }
+            this.drawRect(0, 0, width, height);
         }
     }
 }

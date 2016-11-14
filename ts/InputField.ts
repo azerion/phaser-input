@@ -79,6 +79,7 @@ module Fabrique {
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
 
             this.selection = new SelectionHighlight(this.game, this.inputOptions);
+            this.selection.mask = this.textMask;
             this.addChild(this.selection);
 
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {

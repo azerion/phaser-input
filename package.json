@@ -1,7 +1,7 @@
 {
   "name": "phaser-input",
   "author": "OrangeGames",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.",
   "contributors": [
     {
@@ -26,10 +26,10 @@
     "grunt-contrib-connect": "^0.11.2",
     "grunt-contrib-uglify": "^0.11.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-typescript": "0.8.0",
-    "phaser": "2.6.1",
+    "grunt-ts": "^6.0.0-beta.3",
+    "phaser": "2.6.2",
     "phaser-nineslice": "^1.0.0",
-    "typescript": "1.8.x"
+    "typescript": "2.0.x"
   },
   "engines": {
     "node": "5.x.x"
