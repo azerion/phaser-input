@@ -17,7 +17,7 @@ Getting Started
 ---------------
 First you want to get a fresh copy of the plugin. You can get it from this repo or from npm, ain't that handy.
 ```
-npm install phaser-input --save-dev
+npm install @orange-games/phaser-input --save-dev
 ```
 
 Next up you'd want to add it to your list of js sources you load into your game
