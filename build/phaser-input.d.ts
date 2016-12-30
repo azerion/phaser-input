@@ -53,6 +53,20 @@ declare module Fabrique {
     }
     class InputField extends Phaser.Sprite {
         focusOutOnEnter: boolean;
+        static active: boolean;
+        static game: Phaser.Game;
+        static hasPostRender: boolean;
+        static hasPostUpdate: boolean;
+        static hasPreUpdate: boolean;
+        static hasRender: boolean;
+        static hasUpdate: boolean;
+        static parent: any;
+        static visible: boolean;
+        static destroy: () => void;
+        static postRender: () => void;
+        static preUpdate: () => void;
+        static render: () => void;
+        static update: () => void;
         private placeHolder;
         private box;
         private textMask;
@@ -127,6 +141,21 @@ declare module Fabrique {
             static KeyboardOpen: boolean;
             static onKeyboardOpen: Phaser.Signal;
             static onKeyboardClose: Phaser.Signal;
+            static active: boolean;
+            static game: Phaser.Game;
+            static hasPostRender: boolean;
+            static hasPostUpdate: boolean;
+            static hasPreUpdate: boolean;
+            static hasRender: boolean;
+            static hasUpdate: boolean;
+            static parent: any;
+            static visible: boolean;
+            static destroy: () => void;
+            static postRender: () => void;
+            static preUpdate: () => void;
+            static render: () => void;
+            static update: () => void;
+
             constructor(game: Phaser.Game, parent: Phaser.PluginManager);
             private addInputFieldFactory();
         }
