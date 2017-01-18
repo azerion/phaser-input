@@ -1,21 +1,32 @@
-module Fabrique {
+module PhaserInput {
     export class TextMask extends Phaser.Graphics {
+        private maskWidth: number;
+        private maskHeight: number;
+
         constructor(game: Phaser.Game, inputOptions: InputOptions) {
             super(game, inputOptions.padding, inputOptions.padding);
 
-            var borderRadius = inputOptions.borderRadius,
-                height = inputOptions.height;
+            var height = inputOptions.height;
 
             if (inputOptions.font) {
                 //fetch height from font;
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
-            var width = inputOptions.width;
-            height *= 1.3;
+            this.maskWidth = inputOptions.width;
+            this.maskHeight = height * 1.3;
+            this.drawMask();
+        }
 
-            this.beginFill(0x000000);
+        public resize(newWidth: number): void {
+            this.maskWidth = newWidth;
+            this.drawMask();
+        }
 
-            this.drawRect(0, 0, width, height);
+        private drawMask(): void {
+            this.clear()
+                .beginFill(0x000000)
+                .drawRect(0, 0, this.maskWidth, this.maskHeight)
+                .endFill();
         }
     }
 }

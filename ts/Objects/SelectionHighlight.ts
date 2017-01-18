@@ -1,4 +1,4 @@
-module Fabrique {
+module PhaserInput {
     export class SelectionHighlight extends Phaser.Graphics {
         private inputOptions: InputOptions;
 

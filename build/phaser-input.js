@@ -1,21 +1,30 @@
+/*!
+ * phaser-input - version 2.0.0 
+ * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
+ *
+ * OrangeGames
+ * Build at 18-01-2017
+ * Released under MIT License 
+ */
+
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Fabrique;
-(function (Fabrique) {
+var PhaserInput;
+(function (PhaserInput) {
+    var InputType;
     (function (InputType) {
         InputType[InputType["text"] = 0] = "text";
         InputType[InputType["password"] = 1] = "password";
         InputType[InputType["number"] = 2] = "number";
-    })(Fabrique.InputType || (Fabrique.InputType = {}));
-    var InputType = Fabrique.InputType;
+    })(InputType = PhaserInput.InputType || (PhaserInput.InputType = {}));
     var InputElement = (function () {
         function InputElement(game, id, type, value) {
-            var _this = this;
             if (type === void 0) { type = InputType.text; }
             if (value === void 0) { value = ''; }
+            var _this = this;
             this.focusIn = new Phaser.Signal();
             this.focusOut = new Phaser.Signal();
             this.id = id;
@@ -147,100 +156,122 @@ var Fabrique;
         };
         return InputElement;
     }());
-    Fabrique.InputElement = InputElement;
-})(Fabrique || (Fabrique = {}));
-var Fabrique;
-(function (Fabrique) {
+    PhaserInput.InputElement = InputElement;
+})(PhaserInput || (PhaserInput = {}));
+var PhaserInput;
+(function (PhaserInput) {
     var InputField = (function (_super) {
         __extends(InputField, _super);
         function InputField(game, x, y, inputOptions) {
-            var _this = this;
             if (inputOptions === void 0) { inputOptions = {}; }
-            _super.call(this, game, x, y);
-            this.focusOutOnEnter = true;
-            this.placeHolder = null;
-            this.box = null;
-            this.focus = false;
-            this.value = '';
-            this.windowScale = 1;
-            this.blockInput = true;
-            this.blink = true;
-            this.cnt = 0;
-            this.inputOptions = inputOptions;
-            this.inputOptions.width = inputOptions.width || 150;
-            this.inputOptions.padding = inputOptions.padding || 0;
-            this.inputOptions.textAlign = inputOptions.textAlign || 'left';
-            this.inputOptions.type = inputOptions.type || Fabrique.InputType.text;
-            this.inputOptions.borderRadius = inputOptions.borderRadius || 0;
-            this.inputOptions.height = inputOptions.height || 14;
-            this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
-            this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
-            this.inputOptions.zoom = (!game.device.desktop) ? inputOptions.zoom || false : false;
-            this.box = new Fabrique.InputBox(this.game, inputOptions);
-            this.setTexture(this.box.generateTexture());
-            this.textMask = new Fabrique.TextMask(this.game, inputOptions);
-            this.addChild(this.textMask);
-            this.domElement = new Fabrique.InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), this.inputOptions.type, this.value);
-            this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
-            this.selection = new Fabrique.SelectionHighlight(this.game, this.inputOptions);
-            this.selection.mask = this.textMask;
-            this.addChild(this.selection);
+            var _this = _super.call(this, game, x, y) || this;
+            _this.focusOutOnEnter = true;
+            _this.placeHolder = null;
+            _this.box = null;
+            _this.focus = false;
+            _this.value = '';
+            _this.windowScale = 1;
+            _this.blockInput = true;
+            _this.blink = true;
+            _this.cnt = 0;
+            _this.inputOptions = inputOptions;
+            _this.inputOptions.width = (typeof inputOptions.width === 'number') ? inputOptions.width : 150;
+            _this.inputOptions.padding = (typeof inputOptions.padding === 'number') ? inputOptions.padding : 0;
+            _this.inputOptions.textAlign = inputOptions.textAlign || 'left';
+            _this.inputOptions.type = inputOptions.type || PhaserInput.InputType.text;
+            _this.inputOptions.borderRadius = (typeof inputOptions.borderRadius === 'number') ? inputOptions.borderRadius : 0;
+            _this.inputOptions.height = (typeof inputOptions.height === 'number') ? inputOptions.height : 14;
+            _this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
+            _this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
+            _this.inputOptions.zoom = (!game.device.desktop) ? inputOptions.zoom || false : false;
+            _this.box = new PhaserInput.InputBox(_this.game, inputOptions);
+            _this.setTexture(_this.box.generateTexture());
+            _this.textMask = new PhaserInput.TextMask(_this.game, inputOptions);
+            _this.addChild(_this.textMask);
+            _this.domElement = new PhaserInput.InputElement(_this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), _this.inputOptions.type, _this.value);
+            _this.domElement.setMax(_this.inputOptions.max, _this.inputOptions.min);
+            _this.selection = new PhaserInput.SelectionHighlight(_this.game, _this.inputOptions);
+            _this.selection.mask = _this.textMask;
+            _this.addChild(_this.selection);
             if (inputOptions.placeHolder && inputOptions.placeHolder.length > 0) {
-                this.placeHolder = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, inputOptions.placeHolder, {
+                _this.placeHolder = new Phaser.Text(game, _this.inputOptions.padding, _this.inputOptions.padding, inputOptions.placeHolder, {
                     font: inputOptions.font || '14px Arial',
                     fontWeight: inputOptions.fontWeight || 'normal',
                     fill: inputOptions.placeHolderColor || '#bfbebd'
                 });
-                this.placeHolder.mask = this.textMask;
-                this.addChild(this.placeHolder);
+                _this.placeHolder.mask = _this.textMask;
+                _this.addChild(_this.placeHolder);
             }
-            this.cursor = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding - 2, '|', {
+            _this.cursor = new Phaser.Text(game, _this.inputOptions.padding, _this.inputOptions.padding - 2, '|', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.cursorColor || '#000000'
             });
-            this.cursor.visible = false;
-            this.addChild(this.cursor);
-            this.text = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, '', {
+            _this.cursor.visible = false;
+            _this.addChild(_this.cursor);
+            _this.text = new Phaser.Text(game, _this.inputOptions.padding, _this.inputOptions.padding, '', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.fill || '#000000'
             });
-            this.text.mask = this.textMask;
-            this.addChild(this.text);
-            this.offscreenText = new Phaser.Text(game, this.inputOptions.padding, this.inputOptions.padding, '', {
+            _this.text.mask = _this.textMask;
+            _this.addChild(_this.text);
+            _this.offscreenText = new Phaser.Text(game, _this.inputOptions.padding, _this.inputOptions.padding, '', {
                 font: inputOptions.font || '14px Arial',
                 fontWeight: inputOptions.fontWeight || 'normal',
                 fill: inputOptions.fill || '#000000'
             });
-            switch (this.inputOptions.textAlign) {
-                case 'left':
-                    this.text.anchor.set(0, 0);
-                    this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
-                    break;
-                case 'center':
-                    this.text.anchor.set(0.5, 0);
-                    this.text.x += this.inputOptions.width / 2;
-                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width / 2 - this.text.width / 2 + this.getCaretPosition();
-                    break;
-                case 'right':
-                    this.text.anchor.set(1, 0);
-                    this.text.x += this.inputOptions.width;
-                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
-                    break;
-            }
-            this.inputEnabled = true;
-            this.input.useHandCursor = true;
-            this.game.input.onDown.add(this.checkDown, this);
-            this.domElement.focusOut.add(function () {
-                if (Fabrique.Plugins.InputField.KeyboardOpen) {
+            _this.updateTextAlignment();
+            _this.inputEnabled = true;
+            _this.input.useHandCursor = true;
+            _this.game.input.onDown.add(_this.checkDown, _this);
+            _this.domElement.focusOut.add(function () {
+                if (PhaserInput.KeyboardOpen) {
                     _this.endFocus();
                     if (_this.inputOptions.zoom) {
                         _this.zoomOut();
                     }
                 }
             });
+            return _this;
         }
+        Object.defineProperty(InputField.prototype, "width", {
+            get: function () {
+                return this.inputOptions.width;
+            },
+            set: function (width) {
+                this.inputOptions.width = width;
+                this.box.resize(width);
+                this.textMask.resize(width);
+                this.updateTextAlignment();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        InputField.prototype.updateTextAlignment = function () {
+            switch (this.inputOptions.textAlign) {
+                case 'left':
+                    this.text.anchor.set(0, 0);
+                    this.text.x = this.inputOptions.padding;
+                    this.placeHolder.anchor.set(0, 0);
+                    this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
+                    break;
+                case 'center':
+                    this.text.anchor.set(0.5, 0);
+                    this.text.x = this.inputOptions.padding + this.inputOptions.width / 2;
+                    this.placeHolder.anchor.set(0.5, 0);
+                    this.placeHolder.x = this.inputOptions.padding + this.inputOptions.width / 2;
+                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width / 2 - this.text.width / 2 + this.getCaretPosition();
+                    break;
+                case 'right':
+                    this.text.anchor.set(1, 0);
+                    this.text.x = this.inputOptions.padding + this.inputOptions.width;
+                    this.placeHolder.anchor.set(1, 0);
+                    this.placeHolder.x = this.inputOptions.padding + this.inputOptions.width;
+                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
+                    break;
+            }
+        };
         InputField.prototype.checkDown = function (e) {
             if (!this.value) {
                 this.resetText();
@@ -250,7 +281,7 @@ var Fabrique;
                     this.setCaretOnclick(e);
                     return;
                 }
-                if (this.inputOptions.zoom && !Fabrique.Plugins.InputField.Zoomed) {
+                if (this.inputOptions.zoom && !PhaserInput.Zoomed) {
                     this.zoomIn();
                 }
                 this.startFocus();
@@ -298,8 +329,8 @@ var Fabrique;
                 this.domElement.blur();
             }
             if (!this.game.device.desktop) {
-                Fabrique.Plugins.InputField.KeyboardOpen = false;
-                Fabrique.Plugins.InputField.onKeyboardClose.dispatch();
+                PhaserInput.KeyboardOpen = false;
+                PhaserInput.onKeyboardClose.dispatch();
             }
         };
         InputField.prototype.startFocus = function () {
@@ -317,8 +348,8 @@ var Fabrique;
                 this.keyUpProcessor();
             }
             if (!this.game.device.desktop) {
-                Fabrique.Plugins.InputField.KeyboardOpen = true;
-                Fabrique.Plugins.InputField.onKeyboardOpen.dispatch();
+                PhaserInput.KeyboardOpen = true;
+                PhaserInput.onKeyboardOpen.dispatch();
             }
         };
         InputField.prototype.keyUpProcessor = function () {
@@ -330,12 +361,12 @@ var Fabrique;
         };
         InputField.prototype.updateText = function () {
             var text = '';
-            if (this.inputOptions.type === Fabrique.InputType.password) {
+            if (this.inputOptions.type === PhaserInput.InputType.password) {
                 for (var i = 0; i < this.value.length; i++) {
                     text += '*';
                 }
             }
-            else if (this.inputOptions.type === Fabrique.InputType.number) {
+            else if (this.inputOptions.type === PhaserInput.InputType.number) {
                 var val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
                     text = this.value = this.domElement.value = this.inputOptions.min;
@@ -393,7 +424,7 @@ var Fabrique;
                 return this.text.width;
             }
             var text = this.value;
-            if (this.inputOptions.type === Fabrique.InputType.password) {
+            if (this.inputOptions.type === PhaserInput.InputType.password) {
                 text = '';
                 for (var i = 0; i < this.value.length; i++) {
                     text += '*';
@@ -425,7 +456,7 @@ var Fabrique;
         InputField.prototype.updateSelection = function () {
             if (this.domElement.hasSelection) {
                 var text = this.value;
-                if (this.inputOptions.type === Fabrique.InputType.password) {
+                if (this.inputOptions.type === PhaserInput.InputType.password) {
                     text = '';
                     for (var i = 0; i < this.value.length; i++) {
                         text += '*';
@@ -448,7 +479,7 @@ var Fabrique;
             }
         };
         InputField.prototype.zoomIn = function () {
-            if (Fabrique.Plugins.InputField.Zoomed) {
+            if (PhaserInput.Zoomed) {
                 return;
             }
             var bounds = this.getBounds();
@@ -461,15 +492,15 @@ var Fabrique;
             var offsetX = ((this.game.width - bounds.width * 1.5) / 2) / this.windowScale;
             this.game.world.scale.set(this.game.world.scale.x * this.windowScale, this.game.world.scale.y * this.windowScale);
             this.game.world.pivot.set(bounds.x - offsetX, bounds.y - this.inputOptions.padding * 2);
-            Fabrique.Plugins.InputField.Zoomed = true;
+            PhaserInput.Zoomed = true;
         };
         InputField.prototype.zoomOut = function () {
-            if (!Fabrique.Plugins.InputField.Zoomed) {
+            if (!PhaserInput.Zoomed) {
                 return;
             }
             this.game.world.scale.set(this.game.world.scale.x / this.windowScale, this.game.world.scale.y / this.windowScale);
             this.game.world.pivot.set(0, 0);
-            Fabrique.Plugins.InputField.Zoomed = false;
+            PhaserInput.Zoomed = false;
         };
         InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
@@ -512,41 +543,59 @@ var Fabrique;
         };
         return InputField;
     }(Phaser.Sprite));
-    Fabrique.InputField = InputField;
-})(Fabrique || (Fabrique = {}));
-var Fabrique;
-(function (Fabrique) {
+    PhaserInput.InputField = InputField;
+})(PhaserInput || (PhaserInput = {}));
+var PhaserInput;
+(function (PhaserInput) {
     var InputBox = (function (_super) {
         __extends(InputBox, _super);
         function InputBox(game, inputOptions) {
-            _super.call(this, game, 0, 0);
-            var bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff, borderRadius = inputOptions.borderRadius || 0, borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595, alpha = inputOptions.fillAlpha, height = inputOptions.height;
+            var _this = _super.call(this, game, 0, 0) || this;
+            _this.bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
+            _this.borderRadius = inputOptions.borderRadius || 0;
+            _this.borderWidth = inputOptions.borderWidth || 1;
+            _this.borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
+            _this.boxAlpha = inputOptions.fillAlpha;
+            _this.padding = inputOptions.padding;
+            var height = inputOptions.height;
+            var width = inputOptions.width;
+            var height;
             if (inputOptions.font) {
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
-            height = inputOptions.padding * 2 + height;
+            _this.boxHeight = _this.padding * 2 + height;
             var width = inputOptions.width;
-            width = inputOptions.padding * 2 + width;
-            this.beginFill(bgColor, alpha)
-                .lineStyle(inputOptions.borderWidth || 1, borderColor, alpha);
-            if (borderRadius > 0) {
-                this.drawRoundedRect(0, 0, width, height, borderRadius);
+            _this.boxWidth = _this.padding * 2 + width;
+            _this.drawBox();
+            return _this;
+        }
+        InputBox.prototype.resize = function (newWidth) {
+            this.boxWidth = this.padding * 2 + newWidth;
+            this.drawBox();
+        };
+        InputBox.prototype.drawBox = function () {
+            this.clear()
+                .beginFill(this.bgColor, this.boxAlpha)
+                .lineStyle(this.borderWidth, this.borderColor, this.boxAlpha);
+            if (this.borderRadius > 0) {
+                this.drawRoundedRect(0, 0, this.boxWidth, this.boxHeight, this.borderRadius);
             }
             else {
-                this.drawRect(0, 0, width, height);
+                this.drawRect(0, 0, this.boxWidth, this.boxHeight);
             }
-        }
+        };
         return InputBox;
     }(Phaser.Graphics));
-    Fabrique.InputBox = InputBox;
-})(Fabrique || (Fabrique = {}));
-var Fabrique;
-(function (Fabrique) {
+    PhaserInput.InputBox = InputBox;
+})(PhaserInput || (PhaserInput = {}));
+var PhaserInput;
+(function (PhaserInput) {
     var SelectionHighlight = (function (_super) {
         __extends(SelectionHighlight, _super);
         function SelectionHighlight(game, inputOptions) {
-            _super.call(this, game, inputOptions.padding, inputOptions.padding);
-            this.inputOptions = inputOptions;
+            var _this = _super.call(this, game, inputOptions.padding, inputOptions.padding) || this;
+            _this.inputOptions = inputOptions;
+            return _this;
         }
         SelectionHighlight.prototype.updateSelection = function (rect) {
             var color = Phaser.Color.webToColor(this.inputOptions.selectionColor);
@@ -561,56 +610,68 @@ var Fabrique;
         };
         return SelectionHighlight;
     }(Phaser.Graphics));
-    Fabrique.SelectionHighlight = SelectionHighlight;
-})(Fabrique || (Fabrique = {}));
-var Fabrique;
-(function (Fabrique) {
+    PhaserInput.SelectionHighlight = SelectionHighlight;
+})(PhaserInput || (PhaserInput = {}));
+var PhaserInput;
+(function (PhaserInput) {
     var TextMask = (function (_super) {
         __extends(TextMask, _super);
         function TextMask(game, inputOptions) {
-            _super.call(this, game, inputOptions.padding, inputOptions.padding);
-            var borderRadius = inputOptions.borderRadius, height = inputOptions.height;
+            var _this = _super.call(this, game, inputOptions.padding, inputOptions.padding) || this;
+            var height = inputOptions.height;
             if (inputOptions.font) {
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
-            var width = inputOptions.width;
-            height *= 1.3;
-            this.beginFill(0x000000);
-            this.drawRect(0, 0, width, height);
+            _this.maskWidth = inputOptions.width;
+            _this.maskHeight = height * 1.3;
+            _this.drawMask();
+            return _this;
         }
+        TextMask.prototype.resize = function (newWidth) {
+            this.maskWidth = newWidth;
+            this.drawMask();
+        };
+        TextMask.prototype.drawMask = function () {
+            this.clear()
+                .beginFill(0x000000)
+                .drawRect(0, 0, this.maskWidth, this.maskHeight)
+                .endFill();
+        };
         return TextMask;
     }(Phaser.Graphics));
-    Fabrique.TextMask = TextMask;
-})(Fabrique || (Fabrique = {}));
-var Fabrique;
-(function (Fabrique) {
-    var Plugins;
-    (function (Plugins) {
-        var InputField = (function (_super) {
-            __extends(InputField, _super);
-            function InputField(game, parent) {
-                _super.call(this, game, parent);
-                this.addInputFieldFactory();
-            }
-            InputField.prototype.addInputFieldFactory = function () {
-                Phaser.GameObjectFactory.prototype.inputField = function (x, y, inputOptions, group) {
-                    if (group === undefined) {
-                        group = this.world;
-                    }
-                    var nineSliceObject = new Fabrique.InputField(this.game, x, y, inputOptions);
-                    return group.add(nineSliceObject);
-                };
-                Phaser.GameObjectCreator.prototype.inputField = function (x, y, inputOptions) {
-                    return new Fabrique.InputField(this.game, x, y, inputOptions);
-                };
+    PhaserInput.TextMask = TextMask;
+})(PhaserInput || (PhaserInput = {}));
+var PhaserInput;
+(function (PhaserInput) {
+    PhaserInput.Zoomed = false;
+    PhaserInput.KeyboardOpen = false;
+    PhaserInput.onKeyboardOpen = new Phaser.Signal();
+    PhaserInput.onKeyboardClose = new Phaser.Signal();
+    var Plugin = (function (_super) {
+        __extends(Plugin, _super);
+        function Plugin(game, parent) {
+            var _this = _super.call(this, game, parent) || this;
+            _this.addInputFieldFactory();
+            return _this;
+        }
+        Plugin.prototype.addInputFieldFactory = function () {
+            Phaser.GameObjectFactory.prototype.inputField = function (x, y, inputOptions, group) {
+                if (group === undefined) {
+                    group = this.world;
+                }
+                var nineSliceObject = new PhaserInput.InputField(this.game, x, y, inputOptions);
+                return group.add(nineSliceObject);
             };
-            InputField.Zoomed = false;
-            InputField.KeyboardOpen = false;
-            InputField.onKeyboardOpen = new Phaser.Signal();
-            InputField.onKeyboardClose = new Phaser.Signal();
-            return InputField;
-        }(Phaser.Plugin));
-        Plugins.InputField = InputField;
-    })(Plugins = Fabrique.Plugins || (Fabrique.Plugins = {}));
-})(Fabrique || (Fabrique = {}));
+            Phaser.GameObjectCreator.prototype.inputField = function (x, y, inputOptions) {
+                return new PhaserInput.InputField(this.game, x, y, inputOptions);
+            };
+        };
+        return Plugin;
+    }(Phaser.Plugin));
+    Plugin.Zoomed = false;
+    Plugin.KeyboardOpen = false;
+    Plugin.onKeyboardOpen = new Phaser.Signal();
+    Plugin.onKeyboardClose = new Phaser.Signal();
+    PhaserInput.Plugin = Plugin;
+})(PhaserInput || (PhaserInput = {}));
 //# sourceMappingURL=phaser-input.js.map

@@ -28,10 +28,11 @@
     <script type="text/javascript">
         var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { create: create, preload: preload}, true);
         var figure;
+        var user;
         var testHolder;
         var password;
         Phaser.Device.whenReady(function () {
-            game.plugins.add(Fabrique.Plugins.InputField);
+            game.plugins.add(PhaserInput.Plugin);
             game.plugins.add(Fabrique.Plugins.NineSlice);
         });
 
@@ -60,7 +61,7 @@
             var userBg = game.add.nineSlice(game.width / 2+ 5, 180, 'input', 200, 50);
             userBg.anchor.set(0.5);
 
-            var user = game.add.inputField(game.width / 2 - 85, 180 - 17, {
+            user = game.add.inputField(game.width / 2 - 85, 180 - 17, {
                 font: '18px Arial',
                 fill: '#212121',
                 fillAlpha: 0,
@@ -92,7 +93,7 @@
                 borderColor: '#000',
                 borderRadius: 6,
                 placeHolder: 'Password',
-                type: Fabrique.InputType.password,
+                type: PhaserInput.InputType.password,
                 zoom: true
             });
             password.focusOutOnEnter = false;
@@ -114,7 +115,7 @@
                 min: '18',
                 max: '99',
                 placeHolder: 'Your age',
-                type: Fabrique.InputType.number,
+                type: PhaserInput.InputType.number,
                 zoom: true
             });
 
@@ -152,11 +153,11 @@
                 age.resetText();
             });
 
-            Fabrique.Plugins.InputField.onKeyboardOpen.add(function () {
-                console.error("keyboard open", Fabrique.Plugins.InputField.KeyboardOpen)
+            PhaserInput.onKeyboardOpen.add(function () {
+                console.error("keyboard open", PhaserInput.KeyboardOpen)
             });
-            Fabrique.Plugins.InputField.onKeyboardClose.add(function () {
-                console.error("keyboard close", Fabrique.Plugins.InputField.KeyboardOpen)
+            PhaserInput.onKeyboardClose.add(function () {
+                console.error("keyboard close", PhaserInput.KeyboardOpen)
             });
 
         }

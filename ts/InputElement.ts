@@ -1,4 +1,4 @@
-module Fabrique {
+module PhaserInput {
 
     export enum InputType {
         text,

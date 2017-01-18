@@ -12,7 +12,9 @@ Key features:
 * Easy configurable
 * Production hardened
 
-
+*Imporant*
+From here on this library will be published and updated under [@orange-games/phaser-input](https://www.npmjs.com/package/@orange-games/phaser-input) at NPM, the old [phaser-input](https://www.npmjs.com/package/phaser-input) will no longer be maintained.
+If you are comming from v1 you can read the migration guide at the bottom
 Getting Started
 ---------------
 First you want to get a fresh copy of the plugin. You can get it from this repo or from npm, ain't that handy.
@@ -27,7 +29,7 @@ Next up you'd want to add it to your list of js sources you load into your game
 
 After adding the script to the page you can activate it by enabling the plugin:
 ```javascript
-game.add.plugin(Fabrique.Plugins.InputField);
+game.add.plugin(PhaserInput.Plugin);
 ```
 
 Usage
@@ -51,7 +53,7 @@ var password = game.add.inputField(10, 90, {
     borderColor: '#000',
     borderRadius: 6,
     placeHolder: 'Password',
-    type: Fabrique.InputType.password
+    type: PhaserInput.InputType.password
 });
 ```
 ### Using zoom
@@ -61,7 +63,7 @@ First of all, it's only meant for mobile. Second; it modifies the scale and pivo
 
 Also, when the keyboard is shown, sometimes a resize event will be triggered.
 
-Ideally you use a custom resize event, check for the static property `Fabrique.Plugins.InputField.KeyboardOpen` and don't resize when it's set to true.
+Ideally you use a custom resize event, check for the static property `PhaserInput.KeyboardOpen` and don't resize when it's set to true.
 
 ### Using keyboard open/close signals
 Current version includes two event dispatchers that notify when a device keyboard is opened or closed.
@@ -69,9 +71,9 @@ Current version includes two event dispatchers that notify when a device keyboar
 You can add listeners which trigger events based on this feedback.
 
 ```javascript
-Fabrique.Plugins.InputField.onKeyboardClose.addOnce(function() {
-                    this.resizeBackgroundImage();
-                });
+PhaserInput.onKeyboardClose.addOnce(function() {
+    this.resizeBackgroundImage();
+});
 ```
 
 ### Capture input events
@@ -125,6 +127,17 @@ Tested on:
   * Chrome 48+
   * iOS 9+
 
+Migrating from v1
+-----------------
+the API of the objects is the same as before but the namespace changed. We decided to remove the Fabrique namespace, and house the plugin in it's own (PhaserInput).
+so:
+Fabrique.Plugins.Input
+becomes:
+PhaserInput.Plugin
+
+and all other references of Fabrique.Plugins can be replaced with PhaserInput.
+If you are still unsure how or what, both the example and this readme have been adjusted to work with the new namespace.
+
 FAQ
 ---
 ### I Don't see the cursor blinking!
@@ -136,6 +149,25 @@ So add the following to your object and the cursor should work :)
 update: function () {
     this._inputField.update();
 },
+```
+
+### How do I focus on the element!
+Normally the element is only focused trough user interaction (due to mobile limitations) you can get around this by manually calling the focus method yourself:
+```javascript
+var input = game.add.inputField(10, 90);
+//start with focus on the element
+input.startFocus();
+
+//and then end the focus
+input.endFocus();
+```
+Please note that this will not work on mobile wihtout a  user interaction
+
+### Can I change the width later on in the code?
+Well thanks for asking, yes you can!
+```javascript
+var input = game.add.inputField(10, 90);
+input.width = 200;
 ```
 
 Credits
