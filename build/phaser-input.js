@@ -1,12 +1,3 @@
-/*!
- * phaser-input - version 1.2.6 
- * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
- *
- * OrangeGames
- * Build at 14-11-2016
- * Released under MIT License 
- */
-
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -35,9 +26,10 @@ var Fabrique;
             this.element.id = id;
             this.element.style.position = 'absolute';
             this.element.style.top = canvasTopX + 'px';
-            this.element.style.left = (-20).toString() + 'px';
+            this.element.style.left = (-40).toString() + 'px';
             this.element.style.width = (10).toString() + 'px';
             this.element.style.height = (10).toString() + 'px';
+            this.element.style.border = '0px';
             this.element.value = this.value;
             this.element.type = InputType[type];
             this.element.addEventListener('focusin', function () {

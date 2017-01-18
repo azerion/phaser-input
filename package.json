@@ -19,6 +19,9 @@
       "url": "https://github.com/orange-games/phaser-input/raw/master/LICENSE"
     }
   ],
+  "config": {
+    "name": "phaser-input"
+  },
   "devDependencies": {
     "grunt": "0.4.x",
     "grunt-banner": "^0.6.0",

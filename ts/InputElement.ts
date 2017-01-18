@@ -33,9 +33,10 @@ module Fabrique {
             this.element.id = id;
             this.element.style.position = 'absolute';
             this.element.style.top = canvasTopX + 'px';
-            this.element.style.left = (-20).toString() + 'px';
+            this.element.style.left = (-40).toString() + 'px';
             this.element.style.width = (10).toString() + 'px';
             this.element.style.height = (10).toString() + 'px';
+            this.element.style.border = '0px';
             this.element.value = this.value;
             this.element.type = InputType[type];
 
