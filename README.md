@@ -27,7 +27,7 @@ Next up you'd want to add it to your list of js sources you load into your game
 
 After adding the script to the page you can activate it by enabling the plugin:
 ```javascript
-game.add.plugin(Fabrique.Plugins.InputField);
+game.add.plugin(PhaserInput.Plugin);
 ```
 
 Usage
@@ -51,7 +51,7 @@ var password = game.add.inputField(10, 90, {
     borderColor: '#000',
     borderRadius: 6,
     placeHolder: 'Password',
-    type: Fabrique.InputType.password
+    type: PhaserInput.InputType.password
 });
 ```
 ### Using zoom
@@ -61,7 +61,7 @@ First of all, it's only meant for mobile. Second; it modifies the scale and pivo
 
 Also, when the keyboard is shown, sometimes a resize event will be triggered.
 
-Ideally you use a custom resize event, check for the static property `Fabrique.Plugins.InputField.KeyboardOpen` and don't resize when it's set to true.
+Ideally you use a custom resize event, check for the static property `PhaserInput.KeyboardOpen` and don't resize when it's set to true.
 
 ### Using keyboard open/close signals
 Current version includes two event dispatchers that notify when a device keyboard is opened or closed.
@@ -69,9 +69,9 @@ Current version includes two event dispatchers that notify when a device keyboar
 You can add listeners which trigger events based on this feedback.
 
 ```javascript
-Fabrique.Plugins.InputField.onKeyboardClose.addOnce(function() {
-                    this.resizeBackgroundImage();
-                });
+PhaserInput.onKeyboardClose.addOnce(function() {
+    this.resizeBackgroundImage();
+});
 ```
 
 ### Capture input events
@@ -137,6 +137,18 @@ update: function () {
     this._inputField.update();
 },
 ```
+
+### How do I focus on the element!
+Normally the element is only focused trough user interaction (due to mobile limitations) you can get around this by manually calling the focus method yourself:
+```javascript
+var input = game.add.inputField(10, 90);
+#start with focus on the element
+input.startFocus();
+
+#and then end the focus
+input.endFocus();
+```
+Please note that this will not work on mobile wihtout a  user interaction
 
 Credits
 -------
