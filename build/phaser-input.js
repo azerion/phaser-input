@@ -216,16 +216,21 @@ var Fabrique;
             switch (this.inputOptions.textAlign) {
                 case 'left':
                     this.text.anchor.set(0, 0);
+                    this.placeHolder.anchor.set(0, 0);
                     this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
                     break;
                 case 'center':
                     this.text.anchor.set(0.5, 0);
                     this.text.x += this.inputOptions.width / 2;
+                    this.placeHolder.anchor.set(0.5, 0);
+                    this.placeHolder.x += this.inputOptions.width / 2;
                     this.cursor.x = this.inputOptions.padding + this.inputOptions.width / 2 - this.text.width / 2 + this.getCaretPosition();
                     break;
                 case 'right':
                     this.text.anchor.set(1, 0);
                     this.text.x += this.inputOptions.width;
+                    this.placeHolder.anchor.set(1, 0);
+                    this.placeHolder.x += this.inputOptions.width;
                     this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
                     break;
             }
