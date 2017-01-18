@@ -1,6 +1,6 @@
 /// <reference path="../node_modules/phaser/typescript/pixi.d.ts" />
 /// <reference path="../node_modules/phaser/typescript/phaser.d.ts" />
-declare module Fabrique {
+declare module PhaserInput {
     enum InputType {
         text = 0,
         password = 1,
@@ -32,7 +32,7 @@ declare module Fabrique {
         setCaretPosition(pos: number): void;
     }
 }
-declare module Fabrique {
+declare module PhaserInput {
     interface InputOptions extends Phaser.PhaserTextStyle {
         x?: number;
         y?: number;
@@ -68,7 +68,9 @@ declare module Fabrique {
         private selection;
         private windowScale;
         blockInput: boolean;
+        width: number;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
+        private updateTextAlignment();
         private checkDown(e);
         private blink;
         private cnt;
@@ -89,12 +91,22 @@ declare module Fabrique {
         setText(text?: string): void;
     }
 }
-declare module Fabrique {
+declare module PhaserInput {
     class InputBox extends Phaser.Graphics {
+        private bgColor;
+        private borderRadius;
+        private borderColor;
+        private borderWidth;
+        private boxAlpha;
+        private boxHeight;
+        private padding;
+        private boxWidth;
         constructor(game: Phaser.Game, inputOptions: InputOptions);
+        resize(newWidth: number): void;
+        private drawBox();
     }
 }
-declare module Fabrique {
+declare module PhaserInput {
     class SelectionHighlight extends Phaser.Graphics {
         private inputOptions;
         constructor(game: Phaser.Game, inputOptions: InputOptions);
@@ -107,30 +119,36 @@ declare module Fabrique {
         }): number;
     }
 }
-declare module Fabrique {
+declare module PhaserInput {
     class TextMask extends Phaser.Graphics {
+        private maskWidth;
+        private maskHeight;
         constructor(game: Phaser.Game, inputOptions: InputOptions);
+        resize(newWidth: number): void;
+        private drawMask();
     }
 }
-declare module Fabrique {
-    module Plugins {
-        interface InputFieldObjectFactory extends Phaser.GameObjectFactory {
-            inputField: (x: number, y: number, inputOptions?: Fabrique.InputOptions, group?: Phaser.Group) => Fabrique.InputField;
-        }
-        interface InputFieldObjectCreator extends Phaser.GameObjectCreator {
-            inputField: (x: number, y: number, inputOptions?: Fabrique.InputOptions) => Fabrique.InputField;
-        }
-        interface InputFieldGame extends Phaser.Game {
-            add: InputFieldObjectFactory;
-            make: InputFieldObjectCreator;
-        }
-        class InputField extends Phaser.Plugin {
-            static Zoomed: boolean;
-            static KeyboardOpen: boolean;
-            static onKeyboardOpen: Phaser.Signal;
-            static onKeyboardClose: Phaser.Signal;
-            constructor(game: Phaser.Game, parent: Phaser.PluginManager);
-            private addInputFieldFactory();
-        }
+declare module PhaserInput {
+    var Zoomed: boolean;
+    var KeyboardOpen: boolean;
+    const onKeyboardOpen: Phaser.Signal;
+    const onKeyboardClose: Phaser.Signal;
+    interface InputFieldObjectFactory extends Phaser.GameObjectFactory {
+        inputField: (x: number, y: number, inputOptions?: PhaserInput.InputOptions, group?: Phaser.Group) => PhaserInput.InputField;
+    }
+    interface InputFieldObjectCreator extends Phaser.GameObjectCreator {
+        inputField: (x: number, y: number, inputOptions?: PhaserInput.InputOptions) => PhaserInput.InputField;
+    }
+    interface InputFieldGame extends Phaser.Game {
+        add: InputFieldObjectFactory;
+        make: InputFieldObjectCreator;
+    }
+    class Plugin extends Phaser.Plugin {
+        static Zoomed: boolean;
+        static KeyboardOpen: boolean;
+        static onKeyboardOpen: Phaser.Signal;
+        static onKeyboardClose: Phaser.Signal;
+        constructor(game: Phaser.Game, parent: Phaser.PluginManager);
+        private addInputFieldFactory();
     }
 }

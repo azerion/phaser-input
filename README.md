@@ -12,6 +12,8 @@ Key features:
 * Easy configurable
 * Production hardened
 
+*Imporant*
+From here on this library will be published and updated under [@orange-games/phaser-input](https://www.npmjs.com/package/@orange-games/phaser-input) at NPM, the old [phaser-input](https://www.npmjs.com/package/phaser-input) will no longer be maintained.
 
 Getting Started
 ---------------
@@ -142,13 +144,20 @@ update: function () {
 Normally the element is only focused trough user interaction (due to mobile limitations) you can get around this by manually calling the focus method yourself:
 ```javascript
 var input = game.add.inputField(10, 90);
-#start with focus on the element
+//start with focus on the element
 input.startFocus();
 
-#and then end the focus
+//and then end the focus
 input.endFocus();
 ```
 Please note that this will not work on mobile wihtout a  user interaction
+
+### Can I change the width later on in the code?
+Well thanks for asking, yes you can!
+```javascript
+var input = game.add.inputField(10, 90);
+input.width = 200;
+```
 
 Credits
 -------

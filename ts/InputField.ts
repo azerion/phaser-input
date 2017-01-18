@@ -1,4 +1,4 @@
-module Fabrique {
+module PhaserInput {
     import Text = Phaser.Text;
     export interface InputOptions extends Phaser.PhaserTextStyle {
         x?: number;
@@ -26,7 +26,7 @@ module Fabrique {
 
         private placeHolder:Phaser.Text = null;
 
-        private box:Phaser.Graphics = null;
+        private box: InputBox = null;
 
         private textMask: TextMask;
 
@@ -50,17 +50,28 @@ module Fabrique {
 
         public blockInput: boolean = true;
 
+        get width(): number {
+            return this.inputOptions.width;
+        }
+
+        set width(width: number) {
+            this.inputOptions.width = width;
+            this.box.resize(width);
+            this.textMask.resize(width);
+            this.updateTextAlignment();
+        }
+
         constructor(game:Phaser.Game, x:number, y:number, inputOptions:InputOptions = {}) {
             super(game, x, y);
 
             //Parse the options
             this.inputOptions = inputOptions;
-            this.inputOptions.width = inputOptions.width || 150;
-            this.inputOptions.padding = inputOptions.padding || 0;
+            this.inputOptions.width = (typeof inputOptions.width === 'number') ? inputOptions.width : 150;
+            this.inputOptions.padding = (typeof inputOptions.padding === 'number') ? inputOptions.padding : 0;
             this.inputOptions.textAlign = inputOptions.textAlign || 'left';
             this.inputOptions.type = inputOptions.type || InputType.text;
-            this.inputOptions.borderRadius = inputOptions.borderRadius || 0;
-            this.inputOptions.height = inputOptions.height || 14;
+            this.inputOptions.borderRadius = (typeof inputOptions.borderRadius === 'number') ? inputOptions.borderRadius : 0;
+            this.inputOptions.height = (typeof inputOptions.height === 'number') ? inputOptions.height : 14;
             this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
             this.inputOptions.selectionColor = inputOptions.selectionColor || 'rgba(179, 212, 253, 0.8)';
             this.inputOptions.zoom = (!game.device.desktop) ? inputOptions.zoom || false : false;
@@ -115,27 +126,7 @@ module Fabrique {
                 fill: inputOptions.fill || '#000000'
             });
 
-            switch (this.inputOptions.textAlign) {
-                case 'left':
-                    this.text.anchor.set(0, 0);
-                    this.placeHolder.anchor.set(0, 0);
-                    this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
-                    break;
-                case 'center':
-                    this.text.anchor.set(0.5, 0);
-                    this.text.x += this.inputOptions.width / 2;
-                    this.placeHolder.anchor.set(0.5, 0);
-                    this.placeHolder.x += this.inputOptions.width / 2;
-                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width / 2  - this.text.width / 2  + this.getCaretPosition();
-                    break;
-                case 'right':
-                    this.text.anchor.set(1, 0);
-                    this.text.x += this.inputOptions.width;
-                    this.placeHolder.anchor.set(1, 0);
-                    this.placeHolder.x += this.inputOptions.width;
-                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
-                    break;
-            }
+            this.updateTextAlignment()
 
             this.inputEnabled = true;
             this.input.useHandCursor = true;
@@ -143,14 +134,38 @@ module Fabrique {
             this.game.input.onDown.add(this.checkDown, this);
             this.domElement.focusOut.add((): void => {
 
-                if (Plugins.InputField.KeyboardOpen) {
-
+                if (PhaserInput.KeyboardOpen) {
                     this.endFocus();
                     if (this.inputOptions.zoom) {
                         this.zoomOut();
                     }
                 }
             });
+        }
+
+        private updateTextAlignment(): void {
+            switch (this.inputOptions.textAlign) {
+                case 'left':
+                    this.text.anchor.set(0, 0);
+                    this.text.x = this.inputOptions.padding;
+                    this.placeHolder.anchor.set(0, 0);
+                    this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
+                    break;
+                case 'center':
+                    this.text.anchor.set(0.5, 0);
+                    this.text.x = this.inputOptions.padding + this.inputOptions.width / 2;
+                    this.placeHolder.anchor.set(0.5, 0);
+                    this.placeHolder.x = this.inputOptions.padding + this.inputOptions.width / 2;
+                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width / 2  - this.text.width / 2  + this.getCaretPosition();
+                    break;
+                case 'right':
+                    this.text.anchor.set(1, 0);
+                    this.text.x = this.inputOptions.padding + this.inputOptions.width;
+                    this.placeHolder.anchor.set(1, 0);
+                    this.placeHolder.x = this.inputOptions.padding + this.inputOptions.width;
+                    this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
+                    break;
+            }
         }
 
         /**
@@ -173,7 +188,7 @@ module Fabrique {
                     return;
                 }
 
-                if (this.inputOptions.zoom && !Fabrique.Plugins.InputField.Zoomed) {
+                if (this.inputOptions.zoom && !PhaserInput.Zoomed) {
                     this.zoomIn();
                 }
                 this.startFocus();
@@ -239,8 +254,8 @@ module Fabrique {
             }
 
             if (!this.game.device.desktop) {
-                Plugins.InputField.KeyboardOpen = false;
-                Plugins.InputField.onKeyboardClose.dispatch();
+                PhaserInput.KeyboardOpen = false;
+                PhaserInput.onKeyboardClose.dispatch();
             }
         }
 
@@ -264,8 +279,8 @@ module Fabrique {
             }
 
             if (!this.game.device.desktop) {
-                Plugins.InputField.KeyboardOpen = true;
-                Plugins.InputField.onKeyboardOpen.dispatch();
+                PhaserInput.KeyboardOpen = true;
+                PhaserInput.onKeyboardOpen.dispatch();
             }
         }
 
@@ -428,7 +443,7 @@ module Fabrique {
         }
         
         private zoomIn(): void {
-            if (Plugins.InputField.Zoomed) {
+            if (PhaserInput.Zoomed) {
                 return;
             }
 
@@ -442,17 +457,17 @@ module Fabrique {
             let offsetX: number = ((this.game.width - bounds.width * 1.5) / 2) / this.windowScale;
             this.game.world.scale.set(this.game.world.scale.x * this.windowScale, this.game.world.scale.y * this.windowScale);
             this.game.world.pivot.set(bounds.x - offsetX, bounds.y - this.inputOptions.padding * 2);
-            Plugins.InputField.Zoomed = true;
+            PhaserInput.Zoomed = true;
         }
 
         private zoomOut(): void {
-            if (!Plugins.InputField.Zoomed) {
+            if (!PhaserInput.Zoomed) {
                 return;
             }
 
             this.game.world.scale.set(this.game.world.scale.x / this.windowScale, this.game.world.scale.y / this.windowScale);
             this.game.world.pivot.set(0, 0);
-            Plugins.InputField.Zoomed = false;
+            PhaserInput.Zoomed = false;
         }
 
         /**
