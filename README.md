@@ -14,7 +14,7 @@ Key features:
 
 *Imporant*
 From here on this library will be published and updated under [@orange-games/phaser-input](https://www.npmjs.com/package/@orange-games/phaser-input) at NPM, the old [phaser-input](https://www.npmjs.com/package/phaser-input) will no longer be maintained.
-
+If you are comming from v1 you can read the migration guide at the bottom
 Getting Started
 ---------------
 First you want to get a fresh copy of the plugin. You can get it from this repo or from npm, ain't that handy.
@@ -126,6 +126,17 @@ Tested on:
  - Mobile
   * Chrome 48+
   * iOS 9+
+
+Migrating from v1
+-----------------
+the API of the objects is the same as before but the namespace changed. We decided to remove the Fabrique namespace, and house the plugin in it's own (PhaserInput).
+so:
+Fabrique.Plugins.Input
+becomes:
+PhaserInput.Plugin
+
+and all other references of Fabrique.Plugins can be replaced with PhaserInput.
+If you are still unsure how or what, both the example and this readme have been adjusted to work with the new namespace.
 
 FAQ
 ---
