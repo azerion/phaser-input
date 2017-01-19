@@ -1,7 +1,7 @@
 Phaser Input
 ============
-
-Some description here about how awesome this Phaser Input library is, because it works on Canvas AND WebGL. Oh did I mention mobile to? no? Well it supports mobile..
+Phaser Input is a plugin for Phaser that allows you to use html input fields as Phaser object inside your Phaser game. It fills the blanks of CanvasInput (that only works on a canvas renderer) and appends it with full Phaser support!
+The best part is that it will also work on mobile devices!
 
 Key features:
 
@@ -15,6 +15,7 @@ Key features:
 *Imporant*
 From here on this library will be published and updated under [@orange-games/phaser-input](https://www.npmjs.com/package/@orange-games/phaser-input) at NPM, the old [phaser-input](https://www.npmjs.com/package/phaser-input) will no longer be maintained.
 If you are comming from v1 you can read the migration guide at the bottom
+
 Getting Started
 ---------------
 First you want to get a fresh copy of the plugin. You can get it from this repo or from npm, ain't that handy.
@@ -56,6 +57,7 @@ var password = game.add.inputField(10, 90, {
     type: PhaserInput.InputType.password
 });
 ```
+
 ### Using zoom
 Zooming is easy to enable on an input field, it can be passed to the InputField as a setting. But there are some caveats:
 
