@@ -34,7 +34,6 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: ['ts/**/*.ts'],
-                reference: 'ts/references.ts',
                 dest: 'build/<%= pkg.config.name %>.js'
             }
         },
