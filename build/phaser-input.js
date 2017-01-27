@@ -1,9 +1,9 @@
 /*!
- * phaser-input - version 2.0.1 
+ * phaser-input - version 2.0.2 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 19-01-2017
+ * Build at 27-01-2017
  * Released under MIT License 
  */
 
