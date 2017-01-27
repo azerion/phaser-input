@@ -10,7 +10,7 @@
     <!-- Include Phaser Responsiveness JS -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/phaser/2.6.2/phaser.min.js"></script>
     <script type="text/javascript" src="//cnd.fbrq.io/phaser-nineslice/v2.0.0/phaser-nineslice.min.js"></script>
-    <script type="text/javascript" src="../phaser-input.js"></script>
+    <script type="text/javascript" src="./phaser-input.js"></script>
 
     <style type="text/css">
         body {
@@ -33,7 +33,7 @@
         var password;
         Phaser.Device.whenReady(function () {
             game.plugins.add(PhaserInput.Plugin);
-            game.plugins.add(Fabrique.Plugins.NineSlice);
+            game.plugins.add(PhaserNineSlice.Plugin);
         });
 
         function preload() {
@@ -58,7 +58,7 @@
             login.anchor.set(0.5);
 
             //Here's the input field for the user's name
-            var userBg = game.add.nineSlice(game.width / 2+ 5, 180, 'input', 200, 50);
+            var userBg = game.add.nineSlice(game.width / 2+ 5, 180, 'input', null, 200, 50);
             userBg.anchor.set(0.5);
 
             user = game.add.inputField(game.width / 2 - 85, 180 - 17, {
@@ -80,7 +80,7 @@
             user.blockInput = false;
 
             //We'd need a password too
-            var passBg = game.add.nineSlice(game.width / 2+ 5, 250, 'input', 200, 50);
+            var passBg = game.add.nineSlice(game.width / 2+ 5, 250, 'input', null, 200, 50);
             passBg.anchor.set(0.5);
             password = game.add.inputField(game.width / 2 - 85, 250 - 17, {
                 font: '18px Arial',
@@ -100,7 +100,7 @@
             testHolder = password;
 
             //Let's not forget about age?!
-            var ageBg = game.add.nineSlice(game.width / 2 + 5, 320, 'input', 200, 50);
+            var ageBg = game.add.nineSlice(game.width / 2 + 5, 320, 'input', null, 200, 50);
             ageBg.anchor.set(0.5);
             var age = game.add.inputField(game.width / 2 - 85, 320 - 17, {
                 font: '18px Arial',
@@ -114,12 +114,11 @@
                 borderRadius: 6,
                 min: '18',
                 max: '99',
-                placeHolder: 'Your age',
                 type: PhaserInput.InputType.number,
                 zoom: true
             });
 
-            var submitBtn = game.add.nineSlice(game.width / 2 - 100, 360, 'btn', 100, 70);
+            var submitBtn = game.add.nineSlice(game.width / 2 - 100, 360, 'btn', null, 100, 70);
             var submit = game.add.text(game.width / 2 - 80, 380, 'Submit', {
                 font: '18px Arial'
             });
@@ -141,7 +140,7 @@
                 submit.destroy();
             });
 
-            var resetBtn = game.add.nineSlice(game.width / 2 + 10, 360, 'btn', 100, 70);
+            var resetBtn = game.add.nineSlice(game.width / 2 + 10, 360, 'btn', null, 100, 70);
             var reset = game.add.text(game.width / 2 + 35, 380, 'Reset', {
                 font: '18px Arial'
             });
