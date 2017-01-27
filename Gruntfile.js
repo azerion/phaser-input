@@ -47,6 +47,7 @@ module.exports = function (grunt) {
         connect: {
             server: {
                 options: {
+                    base: ['./build', './example'],
                     port: 8080
                 }
             }
