@@ -253,16 +253,15 @@ var PhaserInput;
                 case 'left':
                     this.text.anchor.set(0, 0);
                     this.text.x = this.inputOptions.padding;
-                    if (this.placeHolder) {
+                    if (null !== this.placeHolder) {
                         this.placeHolder.anchor.set(0, 0);
-                        this.placeHolder.x = this.inputOptions.padding;
                     }
                     this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
                     break;
                 case 'center':
                     this.text.anchor.set(0.5, 0);
                     this.text.x = this.inputOptions.padding + this.inputOptions.width / 2;
-                    if (this.placeHolder) {
+                    if (null !== this.placeHolder) {
                         this.placeHolder.anchor.set(0.5, 0);
                         this.placeHolder.x = this.inputOptions.padding + this.inputOptions.width / 2;
                     }
@@ -271,7 +270,7 @@ var PhaserInput;
                 case 'right':
                     this.text.anchor.set(1, 0);
                     this.text.x = this.inputOptions.padding + this.inputOptions.width;
-                    if (this.placeHolder) {
+                    if (null !== this.placeHolder) {
                         this.placeHolder.anchor.set(1, 0);
                         this.placeHolder.x = this.inputOptions.padding + this.inputOptions.width;
                     }
