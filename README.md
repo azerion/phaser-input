@@ -153,7 +153,7 @@ update: function () {
 },
 ```
 
-### How do I focus on the element!
+### How do I focus on the element?!
 Normally the element is only focused trough user interaction (due to mobile limitations) you can get around this by manually calling the focus method yourself:
 ```javascript
 var input = game.add.inputField(10, 90);
@@ -170,6 +170,13 @@ Well thanks for asking, yes you can!
 ```javascript
 var input = game.add.inputField(10, 90);
 input.width = 200;
+```
+
+### Well then, is it also possible to set the value in code?
+Yes you can! The Inputfield has a setText function you can call to set any value you want!
+```javascript
+var input = game.add.inputField(10, 90);
+input.setText("My custom text");
 ```
 
 Credits
