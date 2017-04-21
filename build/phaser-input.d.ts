@@ -10,9 +10,9 @@ declare module PhaserInput {
         private type;
         private id;
         private game;
-        focusIn: Phaser.Signal;
-        focusOut: Phaser.Signal;
-        constructor(game: Phaser.Game, id: string, type?: InputType, value?: string);
+        private focusIn;
+        private focusOut;
+        constructor(game: Phaser.Game, id: string, type?: InputType, value?: string, focusIn?: Phaser.Signal, focusOut?: Phaser.Signal);
         addKeyUpListener(callback: () => void): void;
         blockKeyDownEvents(): void;
         private preventKeyPropagation(evt);
@@ -66,6 +66,8 @@ declare module PhaserInput {
         private selection;
         private windowScale;
         blockInput: boolean;
+        focusIn: Phaser.Signal;
+        focusOut: Phaser.Signal;
         width: number;
         constructor(game: Phaser.Game, x: number, y: number, inputOptions?: InputOptions);
         private updateTextAlignment();

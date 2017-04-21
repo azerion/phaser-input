@@ -50,6 +50,10 @@ module PhaserInput {
 
         public blockInput: boolean = true;
 
+        public focusIn: Phaser.Signal = new Phaser.Signal();
+
+        public focusOut: Phaser.Signal = new Phaser.Signal();
+
         get width(): number {
             return this.inputOptions.width;
         }
@@ -86,7 +90,7 @@ module PhaserInput {
 
             //Create the hidden dom elements
             this.domElement = new InputElement(this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(),
-                this.inputOptions.type, this.value);
+                this.inputOptions.type, this.value, this.focusIn, this.focusOut);
             this.domElement.setMax(this.inputOptions.max, this.inputOptions.min);
 
             this.selection = new SelectionHighlight(this.game, this.inputOptions);
@@ -132,8 +136,7 @@ module PhaserInput {
             this.input.useHandCursor = true;
 
             this.game.input.onDown.add(this.checkDown, this);
-            this.domElement.focusOut.add((): void => {
-
+            this.focusOut.add((): void => {
                 if (PhaserInput.KeyboardOpen) {
                     this.endFocus();
                     if (this.inputOptions.zoom) {
@@ -215,8 +218,9 @@ module PhaserInput {
          */
         private blink:boolean = true;
         private cnt: number = 0;
-        public update()
-        {
+        public update() {
+            this.text.update();
+            this.placeHolder.update();
             if (!this.focus) {
                 return;
             }
@@ -502,8 +506,8 @@ module PhaserInput {
          */
         public destroy(destroyChildren?: boolean) {
             this.game.input.onDown.remove(this.checkDown, this);
-            this.domElement.focusIn.removeAll();
-            this.domElement.focusOut.removeAll();
+            this.focusIn.removeAll();
+            this.focusOut.removeAll();
             this.domElement.destroy();
 
             super.destroy(destroyChildren);

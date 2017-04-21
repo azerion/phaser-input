@@ -1,9 +1,9 @@
 /*!
- * phaser-input - version 2.0.2 
+ * phaser-input - version 2.0.3 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 27-01-2017
+ * Build at 21-04-2017
  * Released under MIT License 
  */
 
@@ -21,15 +21,15 @@ var PhaserInput;
         InputType[InputType["number"] = 2] = "number";
     })(InputType = PhaserInput.InputType || (PhaserInput.InputType = {}));
     var InputElement = (function () {
-        function InputElement(game, id, type, value) {
+        function InputElement(game, id, type, value, focusIn, focusOut) {
             if (type === void 0) { type = InputType.text; }
             if (value === void 0) { value = ''; }
             var _this = this;
-            this.focusIn = new Phaser.Signal();
-            this.focusOut = new Phaser.Signal();
             this.id = id;
             this.type = type;
             this.game = game;
+            this.focusIn = focusIn;
+            this.focusOut = focusOut;
             var canvasTopX = this.game.canvas.getBoundingClientRect().top + document.body.scrollTop;
             this.element = document.createElement('input');
             this.element.id = id;
@@ -42,10 +42,14 @@ var PhaserInput;
             this.element.value = this.value;
             this.element.type = InputType[type];
             this.element.addEventListener('focusin', function () {
-                _this.focusIn.dispatch();
+                if (_this.focusIn instanceof Phaser.Signal) {
+                    _this.focusIn.dispatch();
+                }
             });
             this.element.addEventListener('focusout', function () {
-                _this.focusOut.dispatch();
+                if (_this.focusOut instanceof Phaser.Signal) {
+                    _this.focusOut.dispatch();
+                }
             });
             document.body.appendChild(this.element);
         }
@@ -109,7 +113,9 @@ var PhaserInput;
                         kbAppeared_1 = true;
                     }
                     if (kbAppeared_1 && originalWidth_1 === window.innerWidth && originalHeight_1 === window.innerHeight) {
-                        _this.focusOut.dispatch();
+                        if (_this.focusOut instanceof Phaser.Signal) {
+                            _this.focusOut.dispatch();
+                        }
                         clearInterval(interval_1);
                     }
                 }, 50);
@@ -172,6 +178,8 @@ var PhaserInput;
             _this.value = '';
             _this.windowScale = 1;
             _this.blockInput = true;
+            _this.focusIn = new Phaser.Signal();
+            _this.focusOut = new Phaser.Signal();
             _this.blink = true;
             _this.cnt = 0;
             _this.inputOptions = inputOptions;
@@ -188,7 +196,7 @@ var PhaserInput;
             _this.setTexture(_this.box.generateTexture());
             _this.textMask = new PhaserInput.TextMask(_this.game, inputOptions);
             _this.addChild(_this.textMask);
-            _this.domElement = new PhaserInput.InputElement(_this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), _this.inputOptions.type, _this.value);
+            _this.domElement = new PhaserInput.InputElement(_this.game, 'phaser-input-' + (Math.random() * 10000 | 0).toString(), _this.inputOptions.type, _this.value, _this.focusIn, _this.focusOut);
             _this.domElement.setMax(_this.inputOptions.max, _this.inputOptions.min);
             _this.selection = new PhaserInput.SelectionHighlight(_this.game, _this.inputOptions);
             _this.selection.mask = _this.textMask;
@@ -225,7 +233,7 @@ var PhaserInput;
             _this.inputEnabled = true;
             _this.input.useHandCursor = true;
             _this.game.input.onDown.add(_this.checkDown, _this);
-            _this.domElement.focusOut.add(function () {
+            _this.focusOut.add(function () {
                 if (PhaserInput.KeyboardOpen) {
                     _this.endFocus();
                     if (_this.inputOptions.zoom) {
@@ -302,6 +310,8 @@ var PhaserInput;
             }
         };
         InputField.prototype.update = function () {
+            this.text.update();
+            this.placeHolder.update();
             if (!this.focus) {
                 return;
             }
@@ -523,8 +533,8 @@ var PhaserInput;
         };
         InputField.prototype.destroy = function (destroyChildren) {
             this.game.input.onDown.remove(this.checkDown, this);
-            this.domElement.focusIn.removeAll();
-            this.domElement.focusOut.removeAll();
+            this.focusIn.removeAll();
+            this.focusOut.removeAll();
             this.domElement.destroy();
             _super.prototype.destroy.call(this, destroyChildren);
         };

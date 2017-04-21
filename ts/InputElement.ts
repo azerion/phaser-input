@@ -17,14 +17,16 @@ module PhaserInput {
 
         private game: Phaser.Game;
 
-        public focusIn: Phaser.Signal = new Phaser.Signal();
+        private focusIn: Phaser.Signal;
 
-        public focusOut: Phaser.Signal = new Phaser.Signal();
+        private focusOut: Phaser.Signal;
 
-        constructor(game: Phaser.Game, id: string, type: InputType = InputType.text, value: string = '') {
+        constructor(game: Phaser.Game, id: string, type: InputType = InputType.text, value: string = '', focusIn?: Phaser.Signal, focusOut?: Phaser.Signal) {
             this.id = id;
             this.type = type;
             this.game = game;
+            this.focusIn = focusIn;
+            this.focusOut = focusOut;
 
             let canvasTopX: number = this.game.canvas.getBoundingClientRect().top + document.body.scrollTop;
 
@@ -42,10 +44,14 @@ module PhaserInput {
 
 
             this.element.addEventListener('focusin', (): void => {
-                this.focusIn.dispatch();
+                if (this.focusIn instanceof Phaser.Signal) {
+                    this.focusIn.dispatch();
+                }
             });
             this.element.addEventListener('focusout', (): void => {
-                this.focusOut.dispatch()
+                if (this.focusOut instanceof Phaser.Signal) {
+                    this.focusOut.dispatch();
+                }
             });
 
             document.body.appendChild(this.element);
@@ -128,7 +134,9 @@ module PhaserInput {
                     }
 
                     if (kbAppeared && originalWidth === window.innerWidth && originalHeight === window.innerHeight) {
-                        this.focusOut.dispatch();
+                        if (this.focusOut instanceof Phaser.Signal) {
+                            this.focusOut.dispatch();
+                        }
                         clearInterval(interval);
                     }
                 }, 50);
