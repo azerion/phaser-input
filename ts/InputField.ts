@@ -220,7 +220,9 @@ module PhaserInput {
         private cnt: number = 0;
         public update() {
             this.text.update();
-            this.placeHolder.update();
+            if (this.placeHolder) {
+                this.placeHolder.update();
+            }
             if (!this.focus) {
                 return;
             }
