@@ -25,7 +25,7 @@ npm install @orange-games/phaser-input --save-dev
 
 Next up you'd want to add it to your list of js sources you load into your game
 ```html
-<script src="node_modules/phaser-input/build/phaser-input.js"></script>
+<script src="node_modules/@orange-games/phaser-input/build/phaser-input.js"></script>
 ```
 
 After adding the script to the page you can activate it by enabling the plugin:
