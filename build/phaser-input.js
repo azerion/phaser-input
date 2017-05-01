@@ -311,9 +311,9 @@ var PhaserInput;
         };
         InputField.prototype.update = function () {
             this.text.update();
-			if(this.placeHolder)
+	    if(this.placeHolder)
             this.placeHolder.update();
-			}
+	    }
             if (!this.focus) {
                 return;
             }
