@@ -1,9 +1,9 @@
 /*!
- * phaser-input - version 2.0.3 
+ * phaser-input - version 2.0.4 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 21-04-2017
+ * Build at 02-05-2017
  * Released under MIT License 
  */
 
@@ -54,8 +54,9 @@ var PhaserInput;
             document.body.appendChild(this.element);
         }
         InputElement.prototype.addKeyUpListener = function (callback) {
-            this.callback = callback;
-            document.addEventListener('keyup', this.callback);
+            this.keyUpCallback = callback;
+            document.addEventListener('keyup', this.keyUpCallback);
+            this.element.addEventListener('input', this.keyUpCallback);
         };
         InputElement.prototype.blockKeyDownEvents = function () {
             document.addEventListener('keydown', this.preventKeyPropagation);
@@ -72,7 +73,8 @@ var PhaserInput;
             document.removeEventListener('keydown', this.preventKeyPropagation);
         };
         InputElement.prototype.removeEventListener = function () {
-            document.removeEventListener('keyup', this.callback);
+            document.removeEventListener('keyup', this.keyUpCallback);
+            this.element.removeEventListener('input', this.keyUpCallback);
         };
         InputElement.prototype.destroy = function () {
             document.body.removeChild(this.element);
@@ -311,7 +313,9 @@ var PhaserInput;
         };
         InputField.prototype.update = function () {
             this.text.update();
-            this.placeHolder.update();
+            if (this.placeHolder) {
+                this.placeHolder.update();
+            }
             if (!this.focus) {
                 return;
             }

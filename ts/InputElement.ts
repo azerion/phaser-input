@@ -9,7 +9,9 @@ module PhaserInput {
     export class InputElement {
         private element: HTMLInputElement;
 
-        private callback: () => void;
+        private keyUpCallback: () => void;
+
+        private inputChangeCallback: () => void;
 
         private type: InputType;
 
@@ -42,7 +44,6 @@ module PhaserInput {
             this.element.value = this.value;
             this.element.type = InputType[type];
 
-
             this.element.addEventListener('focusin', (): void => {
                 if (this.focusIn instanceof Phaser.Signal) {
                     this.focusIn.dispatch();
@@ -58,8 +59,10 @@ module PhaserInput {
         }
 
         public addKeyUpListener(callback: () => void): void {
-            this.callback = callback;
-            document.addEventListener('keyup', this.callback);
+            this.keyUpCallback = callback;
+            document.addEventListener('keyup', this.keyUpCallback);
+            this.element.addEventListener('input', this.keyUpCallback);
+
         }
 
         /**
@@ -89,7 +92,8 @@ module PhaserInput {
         }
 
         public removeEventListener(): void {
-            document.removeEventListener('keyup', this.callback);
+            document.removeEventListener('keyup', this.keyUpCallback);
+            this.element.removeEventListener('input', this.keyUpCallback);
         }
 
         public destroy() {
