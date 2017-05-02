@@ -6,7 +6,8 @@ declare module PhaserInput {
     }
     class InputElement {
         private element;
-        private callback;
+        private keyUpCallback;
+        private inputChangeCallback;
         private type;
         private id;
         private game;
