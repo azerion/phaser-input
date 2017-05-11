@@ -3,7 +3,7 @@
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 02-05-2017
+ * Build at 11-05-2017
  * Released under MIT License 
  */
 
@@ -189,6 +189,7 @@ var PhaserInput;
             _this.inputOptions.padding = (typeof inputOptions.padding === 'number') ? inputOptions.padding : 0;
             _this.inputOptions.textAlign = inputOptions.textAlign || 'left';
             _this.inputOptions.type = inputOptions.type || PhaserInput.InputType.text;
+            _this.inputOptions.forceCase = (typeof inputOptions.forceCase === 'number') ? inputOptions.forceCase : 0;
             _this.inputOptions.borderRadius = (typeof inputOptions.borderRadius === 'number') ? inputOptions.borderRadius : 0;
             _this.inputOptions.height = (typeof inputOptions.height === 'number') ? inputOptions.height : 14;
             _this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
@@ -524,6 +525,10 @@ var PhaserInput;
         };
         InputField.prototype.keyListener = function (evt) {
             this.value = this.domElement.value;
+            if (this.inputOptions.forceCase == 1)
+                this.value = this.value.toLowerCase();
+            else if (this.inputOptions.forceCase == 2)
+                this.value = this.value.toUpperCase();
             if (evt.keyCode === 13) {
                 if (this.focusOutOnEnter) {
                     this.endFocus();
