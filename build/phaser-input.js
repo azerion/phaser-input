@@ -1,17 +1,22 @@
 /*!
- * phaser-input - version 2.0.4 
+ * phaser-input - version 2.0.5 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
  * OrangeGames
- * Build at 02-05-2017
+ * Build at 02-06-2017
  * Released under MIT License 
  */
 
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var PhaserInput;
 (function (PhaserInput) {
     var InputType;
@@ -168,6 +173,12 @@ var PhaserInput;
 })(PhaserInput || (PhaserInput = {}));
 var PhaserInput;
 (function (PhaserInput) {
+    var ForceCase;
+    (function (ForceCase) {
+        ForceCase[ForceCase["none"] = 0] = "none";
+        ForceCase[ForceCase["lower"] = 1] = "lower";
+        ForceCase[ForceCase["upper"] = 2] = "upper";
+    })(ForceCase = PhaserInput.ForceCase || (PhaserInput.ForceCase = {}));
     var InputField = (function (_super) {
         __extends(InputField, _super);
         function InputField(game, x, y, inputOptions) {
@@ -189,6 +200,7 @@ var PhaserInput;
             _this.inputOptions.padding = (typeof inputOptions.padding === 'number') ? inputOptions.padding : 0;
             _this.inputOptions.textAlign = inputOptions.textAlign || 'left';
             _this.inputOptions.type = inputOptions.type || PhaserInput.InputType.text;
+            _this.inputOptions.forceCase = (inputOptions.forceCase) ? inputOptions.forceCase : ForceCase.none;
             _this.inputOptions.borderRadius = (typeof inputOptions.borderRadius === 'number') ? inputOptions.borderRadius : 0;
             _this.inputOptions.height = (typeof inputOptions.height === 'number') ? inputOptions.height : 14;
             _this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
@@ -523,7 +535,7 @@ var PhaserInput;
             PhaserInput.Zoomed = false;
         };
         InputField.prototype.keyListener = function (evt) {
-            this.value = this.domElement.value;
+            this.value = this.getFormattedText(this.domElement.value);
             if (evt.keyCode === 13) {
                 if (this.focusOutOnEnter) {
                     this.endFocus();
@@ -555,11 +567,22 @@ var PhaserInput;
                     this.placeHolder.visible = true;
                 }
             }
-            this.value = text;
+            this.value = this.getFormattedText(text);
             this.domElement.value = this.value;
             this.updateText();
             this.updateCursor();
             this.endFocus();
+        };
+        InputField.prototype.getFormattedText = function (text) {
+            switch (this.inputOptions.forceCase) {
+                default:
+                case ForceCase.none:
+                    return text;
+                case ForceCase.lower:
+                    return text.toLowerCase();
+                case ForceCase.upper:
+                    return text.toUpperCase();
+            }
         };
         return InputField;
     }(Phaser.Sprite));

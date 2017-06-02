@@ -1,5 +1,12 @@
 module PhaserInput {
     import Text = Phaser.Text;
+
+    export enum ForceCase {
+        none,
+        lower,
+        upper
+    }
+
     export interface InputOptions extends Phaser.PhaserTextStyle {
         x?: number;
         y?: number;
@@ -14,6 +21,7 @@ module PhaserInput {
         cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
+        forceCase?: ForceCase;
         min?: string;
         max?: string;
         textAlign?: string;
@@ -74,6 +82,7 @@ module PhaserInput {
             this.inputOptions.padding = (typeof inputOptions.padding === 'number') ? inputOptions.padding : 0;
             this.inputOptions.textAlign = inputOptions.textAlign || 'left';
             this.inputOptions.type = inputOptions.type || InputType.text;
+            this.inputOptions.forceCase = (inputOptions.forceCase) ? inputOptions.forceCase : ForceCase.none;
             this.inputOptions.borderRadius = (typeof inputOptions.borderRadius === 'number') ? inputOptions.borderRadius : 0;
             this.inputOptions.height = (typeof inputOptions.height === 'number') ? inputOptions.height : 14;
             this.inputOptions.fillAlpha = (inputOptions.fillAlpha === undefined) ? 1 : inputOptions.fillAlpha;
@@ -487,8 +496,7 @@ module PhaserInput {
          */
         private keyListener(evt: KeyboardEvent)
         {
-            this.value = this.domElement.value;
-
+            this.value = this.getFormattedText(this.domElement.value);
             if (evt.keyCode === 13) {
                 if(this.focusOutOnEnter) {
                     this.endFocus();
@@ -531,11 +539,27 @@ module PhaserInput {
                 }
             }
 
-            this.value = text;
+            this.value = this.getFormattedText(text);
             this.domElement.value = this.value;
             this.updateText();
             this.updateCursor();
             this.endFocus();
+        }
+
+        /**
+         * Returns text formatted by rules stated in inputOptions
+         * @param text
+         */
+        private getFormattedText(text: string): string {
+            switch (this.inputOptions.forceCase) {
+                default:
+                case ForceCase.none:
+                    return text;
+                case ForceCase.lower:
+                    return text.toLowerCase();
+                case ForceCase.upper:
+                    return text.toUpperCase();
+            }
         }
     }
 }
