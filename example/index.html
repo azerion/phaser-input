@@ -67,6 +67,7 @@
                 fill: '#212121',
                 fillAlpha: 0,
                 fontWeight: 'bold',
+                forceCase: PhaserInput.ForceCase.upper,
                 width: 150,
                 max: 20,
                 padding: 8,
@@ -77,7 +78,7 @@
                 textAlign: 'center',
                 zoom: true
             });
-            user.setText('prefilled name');
+            user.setText('prefilled');
             user.blockInput = false;
 
             //We'd need a password too

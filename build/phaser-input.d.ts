@@ -32,6 +32,11 @@ declare module PhaserInput {
     }
 }
 declare module PhaserInput {
+    enum ForceCase {
+        none = 0,
+        lower = 1,
+        upper = 2,
+    }
     interface InputOptions extends Phaser.PhaserTextStyle {
         x?: number;
         y?: number;
@@ -46,7 +51,7 @@ declare module PhaserInput {
         cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
-        forceCase?: number;
+        forceCase?: ForceCase;
         min?: string;
         max?: string;
         textAlign?: string;
@@ -91,6 +96,7 @@ declare module PhaserInput {
         destroy(destroyChildren?: boolean): void;
         resetText(): void;
         setText(text?: string): void;
+        private getFormattedText(text);
     }
 }
 declare module PhaserInput {
