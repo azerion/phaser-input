@@ -46,6 +46,7 @@ declare module PhaserInput {
         cursorColor?: string;
         placeHolderColor?: string;
         type?: InputType;
+        forceCase?: number;
         min?: string;
         max?: string;
         textAlign?: string;
