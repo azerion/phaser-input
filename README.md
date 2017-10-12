@@ -107,7 +107,7 @@ If set to true, pressing enter will end focus on the field (default is true).
  - **padding**: number (0 by default) The padding in pixels around all 4 sides of the text input area.
  - **borderWidth**: number (1 by default) Size of the border
  - **borderColor**: string (#000 by default) Color of the border
- - **forceCase**: ForceCase (none by default) If we should force a certain case (either upper or lower)
+ - **forceCase**: ForceCase (none by default) If we should force a certain case (either PhaserInput.ForceCase.upper or PhaserInput.ForceCase.lower)
  - **borderRadius**: number (0 by default) Create rounded corners by setting a border radius
  - **placeHolder**: string ('' by default) Text that will be shown before the user input's anything
  - **placeHolderColor**: string (#bfbebd by default) The color of the placeholder text
