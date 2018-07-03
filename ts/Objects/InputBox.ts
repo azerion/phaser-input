@@ -13,8 +13,8 @@ module PhaserInput {
             super(game, 0, 0);
             
             this.bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
-            this.borderRadius = inputOptions.borderRadius || 0;
-            this.borderWidth = inputOptions.borderWidth || 1;
+            this.borderRadius = inputOptions.borderRadius = (typeof inputOptions.borderRadius === 'number') ? inputOptions.borderRadius : 0;
+            this.borderWidth = inputOptions.borderWidth = (typeof inputOptions.borderWidth === 'number') ? inputOptions.borderWidth : 1;
             this.borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
             this.boxAlpha = inputOptions.fillAlpha;
             this.padding = inputOptions.padding;
