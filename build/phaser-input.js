@@ -2,8 +2,8 @@
  * phaser-input - version 2.0.5 
  * Adds input boxes to Phaser like CanvasInput, but also works for WebGL and Mobile, made for Phaser only.
  *
- * OrangeGames
- * Build at 02-06-2017
+ * Azerion
+ * Build at 18-03-2019
  * Released under MIT License 
  */
 
@@ -595,8 +595,8 @@ var PhaserInput;
         function InputBox(game, inputOptions) {
             var _this = _super.call(this, game, 0, 0) || this;
             _this.bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
-            _this.borderRadius = inputOptions.borderRadius || 0;
-            _this.borderWidth = inputOptions.borderWidth || 1;
+            _this.borderRadius = inputOptions.borderRadius = (typeof inputOptions.borderRadius === 'number') ? inputOptions.borderRadius : 0;
+            _this.borderWidth = inputOptions.borderWidth = (typeof inputOptions.borderWidth === 'number') ? inputOptions.borderWidth : 1;
             _this.borderColor = (inputOptions.borderColor) ? parseInt(inputOptions.borderColor.slice(1), 16) : 0x959595;
             _this.boxAlpha = inputOptions.fillAlpha;
             _this.padding = inputOptions.padding;
