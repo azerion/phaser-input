@@ -13,19 +13,19 @@ Key features:
 * Production hardened
 
 *Imporant*
-From here on this library will be published and updated under [@orange-games/phaser-input](https://www.npmjs.com/package/@orange-games/phaser-input) at NPM, the old [phaser-input](https://www.npmjs.com/package/phaser-input) will no longer be maintained.
+From here on this library will be published and updated under [@azerion/phaser-input](https://www.npmjs.com/package/@azerion/phaser-input) at NPM, the old [phaser-input](https://www.npmjs.com/package/phaser-input) will no longer be maintained.
 If you are comming from v1 you can read the migration guide at the bottom
 
 Getting Started
 ---------------
 First you want to get a fresh copy of the plugin. You can get it from this repo or from npm, ain't that handy.
 ```
-npm install @orange-games/phaser-input --save-dev
+npm install @azerion/phaser-input --save-dev
 ```
 
 Next up you'd want to add it to your list of js sources you load into your game
 ```html
-<script src="node_modules/@orange-games/phaser-input/build/phaser-input.js"></script>
+<script src="node_modules/@azerion/phaser-input/build/phaser-input.js"></script>
 ```
 
 After adding the script to the page you can activate it by enabling the plugin:
@@ -107,7 +107,7 @@ If set to true, pressing enter will end focus on the field (default is true).
  - **padding**: number (0 by default) The padding in pixels around all 4 sides of the text input area.
  - **borderWidth**: number (1 by default) Size of the border
  - **borderColor**: string (#000 by default) Color of the border
- - **forceCase**: ForceCase (none by default) If we should force a certain case (either upper or lower)
+ - **forceCase**: ForceCase (none by default) If we should force a certain case (either PhaserInput.ForceCase.upper or PhaserInput.ForceCase.lower)
  - **borderRadius**: number (0 by default) Create rounded corners by setting a border radius
  - **placeHolder**: string ('' by default) Text that will be shown before the user input's anything
  - **placeHolderColor**: string (#bfbebd by default) The color of the placeholder text
@@ -186,7 +186,7 @@ phaser-input is inspired by [CanvasInput](https://github.com/goldfire/CanvasInpu
 
 Disclaimer
 ----------
-We at OrangeGames just love playing and creating awesome games. We aren't affiliated with Phaser.io. We just needed some awesome input boxes in our awesome HTML5 games. Feel free to use it for enhancing your own awesome games!
+We at Azerion just love playing and creating awesome games. We aren't affiliated with Phaser.io. We just needed some awesome input boxes in our awesome HTML5 games. Feel free to use it for enhancing your own awesome games!
 
 Phaser Input is distributed under the MIT license. All 3rd party libraries and components are distributed under their
 respective license terms.

@@ -1,4 +1,4 @@
-Before opening this issue _please_ check we haven't already fixed it! Check the [Closed issues](https://github.com/orange-games/phaser-input/issues?q=is%3Aissue+is%3Aclosed)
+Before opening this issue _please_ check we haven't already fixed it! Check the [Closed issues](https://github.com/azerion/phaser-input/issues?q=is%3Aissue+is%3Aclosed)
 This Issue is about (delete as applicable)
 
 * A bug in the API (always say which version you're using!)
